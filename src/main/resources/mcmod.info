@@ -1,0 +1,16 @@
+[
+{
+  "modid": "JSComputing",
+  "name": "JSComputing",
+  "description": "Computing in the modern era.",
+  "version": "0.0",
+  "mcversion": "1.7.2",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["Nickardson"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
