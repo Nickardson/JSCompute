@@ -1,0 +1,1 @@
+doxx --source "./../src/main/java/com/nickardson/jscomputing/js/" --target . --title JSComputing --template template.jade
