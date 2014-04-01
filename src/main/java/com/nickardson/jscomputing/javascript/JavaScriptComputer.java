@@ -33,6 +33,16 @@ public class JavaScriptComputer implements IComputer {
     }
 
     @Override
+    public Object get(String key) {
+        return scope.get(key);
+    }
+
+    @Override
+    public void put(String key, Object value) {
+        scope.put(key, scope, value);
+    }
+
+    @Override
     public void init() {
         ComputerManager.add(this);
     }
