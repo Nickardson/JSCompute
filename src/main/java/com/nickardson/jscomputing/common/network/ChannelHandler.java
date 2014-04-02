@@ -40,7 +40,7 @@ public class ChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket> {
         packet.readBytes(data);
         switch (FMLCommonHandler.instance().getEffectiveSide()) {
             case CLIENT:
-                packet.executeClient(Minecraft.getMinecraft().thePlayer);
+                packet.executeClient(getClientPlayer());
                 break;
             case SERVER:
                 INetHandler netHandler = ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();

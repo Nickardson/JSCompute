@@ -1,7 +1,7 @@
 package com.nickardson.jscomputing.common.network;
 
 import com.nickardson.jscomputing.common.inventory.ContainerComputer;
-import com.nickardson.jscomputing.javascript.IComputer;
+import com.nickardson.jscomputing.common.computers.IComputer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PacketComputerInput extends PacketText {

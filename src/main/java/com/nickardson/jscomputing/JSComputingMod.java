@@ -5,7 +5,7 @@ import com.nickardson.jscomputing.common.GuiHandler;
 import com.nickardson.jscomputing.common.blocks.BlockComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
-import com.nickardson.jscomputing.javascript.JavaScriptEngine;
+import com.nickardson.jscomputing.common.computers.JavaScriptEngine;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;

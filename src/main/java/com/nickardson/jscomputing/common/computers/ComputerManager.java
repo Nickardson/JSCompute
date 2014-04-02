@@ -1,4 +1,4 @@
-package com.nickardson.jscomputing.javascript;
+package com.nickardson.jscomputing.common.computers;
 
 import java.util.HashMap;
 import java.util.Map;

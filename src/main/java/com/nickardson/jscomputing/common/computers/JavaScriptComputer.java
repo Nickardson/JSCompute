@@ -1,8 +1,7 @@
-package com.nickardson.jscomputing.javascript;
+package com.nickardson.jscomputing.common.computers;
 
 import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
-import com.nickardson.jscomputing.javascript.api.APIRobot;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import org.mozilla.javascript.ScriptableObject;
 

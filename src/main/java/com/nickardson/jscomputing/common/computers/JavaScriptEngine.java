@@ -1,8 +1,6 @@
-package com.nickardson.jscomputing.javascript;
+package com.nickardson.jscomputing.common.computers;
 
 import com.cloudbees.util.rhino.sandbox.SandboxContextFactory;
-import com.nickardson.jscomputing.javascript.api.APIRobot;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import org.mozilla.javascript.*;
 
 import java.io.File;

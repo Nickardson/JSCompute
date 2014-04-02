@@ -1,13 +1,12 @@
 package com.nickardson.jscomputing.common.tileentity;
 
 import com.nickardson.jscomputing.JSComputingMod;
-import com.nickardson.jscomputing.javascript.ComputerManager;
-import com.nickardson.jscomputing.javascript.IComputer;
+import com.nickardson.jscomputing.common.computers.ComputerManager;
+import com.nickardson.jscomputing.common.computers.IComputer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 
 public class TileEntityComputer extends AbstractTileEntity implements IInventory {
     public static String NAME = JSComputingMod.ASSET_ID + "ComputerEntity";
