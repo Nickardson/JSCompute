@@ -22,7 +22,7 @@ public class PacketComputerInput extends PacketText {
         if (thePlayer.openContainer instanceof ContainerComputer) {
             ContainerComputer containerComputer = (ContainerComputer) thePlayer.openContainer;
 
-            IComputer c = containerComputer.getComputer().getComputer();
+            IComputer c = containerComputer.getComputer();
             if (c != null) {
                 c.eval(text);
             }

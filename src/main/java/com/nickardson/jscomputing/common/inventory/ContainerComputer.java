@@ -1,16 +1,17 @@
 package com.nickardson.jscomputing.common.inventory;
 
+import com.nickardson.jscomputing.common.computers.IComputer;
 import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
-public class ContainerComputer extends Container {
-    public TileEntityComputer getComputer() {
-        return computer;
+public class ContainerComputer extends Container implements IContainerComputer {
+    public IComputer getComputer() {
+        return computer.getComputer();
     }
 
-    public void setComputer(TileEntityComputer computer) {
-        this.computer = computer;
+    public TileEntityComputer getTileEntity() {
+        return computer;
     }
 
     protected TileEntityComputer computer;

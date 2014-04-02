@@ -1,6 +1,13 @@
 package com.nickardson.jscomputing.common.computers;
 
+import com.nickardson.jscomputing.common.inventory.ContainerComputer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
+import net.minecraft.server.MinecraftServer;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ComputerManager {
@@ -28,5 +35,22 @@ public class ComputerManager {
 
     public static void remove(IComputer computer) {
         remove(computer.getTempID());
+    }
+
+    /**
+     * Gets a list of players who have the given type of container open.
+     */
+    public static List<EntityPlayerMP> getPlayersWithContainer(Class<? extends Container> clazz) {
+        List<EntityPlayerMP> ls = new ArrayList<EntityPlayerMP>();
+
+        List players = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+        for (Object p : players) {
+            EntityPlayerMP player = (EntityPlayerMP) p;
+            if (clazz.isInstance(player.openContainer)) {
+                ls.add(player);
+            }
+        }
+
+        return ls;
     }
 }

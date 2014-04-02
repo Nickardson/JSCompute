@@ -1,20 +1,16 @@
 package com.nickardson.jscomputing.common.blocks;
 
 import com.nickardson.jscomputing.JSComputingMod;
-import com.nickardson.jscomputing.common.inventory.ContainerComputer;
-import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
-import com.nickardson.jscomputing.common.computers.ComputerManager;
 import com.nickardson.jscomputing.common.computers.IComputer;
 import com.nickardson.jscomputing.common.computers.JavaScriptComputer;
+import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -22,7 +18,6 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.List;
 import java.util.Random;
 
 public class BlockComputer extends AbstractBlockContainer {
@@ -137,22 +132,7 @@ public class BlockComputer extends AbstractBlockContainer {
                 entity.setBlockMetadata(entity.getBlockMetadata() - 6);
             }
 
-            List players = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-            for (Object p : players) {
-                System.out.println("Iterate player " + p);
-                EntityPlayerMP player = (EntityPlayerMP) p;
-                if (player.openContainer instanceof ContainerComputer) {
-                    ContainerComputer container = (ContainerComputer) player.openContainer;
-                    System.out.println("Has container with computer " + container.getComputer().getComputer() + " entity is " + entity.getComputer().getTempID());
-
-                    if (container.getComputer().getComputer().equals(entity.getComputer())) {
-                        System.out.println("Close container");
-                        player.closeScreen();
-                    }
-                }
-            }
-
-            ComputerManager.get(entity.tempID).close();
+            entity.getComputer().close();
         }
     }
 
