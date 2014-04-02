@@ -1,5 +1,9 @@
 package com.nickardson.jscomputing.javascript;
 
+import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
+import com.nickardson.jscomputing.javascript.api.APIComputer;
+import com.nickardson.jscomputing.javascript.api.APIRobot;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import org.mozilla.javascript.ScriptableObject;
 
 public class JavaScriptComputer implements IComputer {
@@ -9,9 +13,15 @@ public class JavaScriptComputer implements IComputer {
 
     int id = 0;
     int tempID = ++GLOBAL_TEMP_ID;
+    private TileEntityComputer tileEntity;
 
-    public JavaScriptComputer(int id) {
+    public JavaScriptComputer(int id, TileEntityComputer entityComputer) {
+        this.tileEntity = entityComputer;
         this.scope = JavaScriptEngine.createScope();
+
+        scope.put("print", scope, new APIFunctionPrint());
+        scope.put("computer", scope, new APIComputer(tileEntity));
+
         this.id = id;
     }
 
@@ -28,8 +38,13 @@ public class JavaScriptComputer implements IComputer {
     @Override
     public void eval(String code) {
         JavaScriptEngine.contextEnter();
-        JavaScriptEngine.getContext().evaluateString(scope, code, "<eval>", 1, null);
-        JavaScriptEngine.contextExit();
+        try {
+            JavaScriptEngine.getContext().evaluateString(scope, code, "<eval>", 1, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JavaScriptEngine.contextExit();
+        }
     }
 
     @Override

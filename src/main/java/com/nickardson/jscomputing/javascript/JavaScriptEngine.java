@@ -160,10 +160,7 @@ public class JavaScriptEngine {
         contextEnter();
         ScriptableObject scope = new ImporterTopLevel(getContext());
 
-        scope.put("robot", scope, new APIRobot());
-        scope.put("print", scope, new APIFunctionPrint());
-
-        runLibrary("main.js");
+        // runLibrary("main.js");
         Context.exit();
         return scope;
     }

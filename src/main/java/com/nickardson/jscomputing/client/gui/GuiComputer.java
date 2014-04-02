@@ -2,6 +2,8 @@ package com.nickardson.jscomputing.client.gui;
 
 import com.nickardson.jscomputing.client.rendering.RenderUtilities;
 import com.nickardson.jscomputing.common.inventory.ContainerComputer;
+import com.nickardson.jscomputing.common.network.ChannelHandler;
+import com.nickardson.jscomputing.common.network.PacketComputerInput;
 import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,13 +36,17 @@ public class GuiComputer extends GuiContainer {
         if (key == Keyboard.KEY_BACK && text.length() > 0) {
             text = text.substring(0, text.length() - 1);
         } else if (key == Keyboard.KEY_RETURN) {
-            System.out.println("Text input: " + text);
+            onInput(text);
             text = "";
         } else if (isValidKey(key)) {
             text += Character.toString(character);
         } else {
             super.keyTyped(character, key);
         }
+    }
+
+    public void onInput(String text) {
+        ChannelHandler.sendToServer(new PacketComputerInput(text));
     }
 
     @Override

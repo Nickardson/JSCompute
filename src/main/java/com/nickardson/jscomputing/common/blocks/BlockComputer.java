@@ -1,23 +1,29 @@
 package com.nickardson.jscomputing.common.blocks;
 
 import com.nickardson.jscomputing.JSComputingMod;
+import com.nickardson.jscomputing.common.inventory.ContainerComputer;
+import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
 import com.nickardson.jscomputing.javascript.ComputerManager;
 import com.nickardson.jscomputing.javascript.IComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptComputer;
-import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.List;
+import java.util.Random;
 
 public class BlockComputer extends AbstractBlockContainer {
     public static String NAME = JSComputingMod.ASSET_ID + "Computer";
@@ -69,12 +75,7 @@ public class BlockComputer extends AbstractBlockContainer {
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack) {
-        int look = MathHelper.floor_double(
-                // Divide into 4 cardinal directions
-                (player.rotationYaw * 4f) / 360f +
-                // Add effective 45 degree rotation
-                0.5
-        ) & 3;
+        int look = MathHelper.floor_double((double)((player.rotationYaw * 4F) / 360F) + 0.5D) & 3;
 
         ForgeDirection direction;
         switch (look)
@@ -91,9 +92,7 @@ public class BlockComputer extends AbstractBlockContainer {
                 direction = ForgeDirection.NORTH;
         }
 
-        if (direction != null) {
-            world.setBlockMetadataWithNotify(x, y, z, direction.flag, 2);
-        }
+        world.setBlockMetadataWithNotify(x, y, z, direction.ordinal(), 2);
     }
 
     @Override
@@ -107,9 +106,8 @@ public class BlockComputer extends AbstractBlockContainer {
         if (entity != null) {
             if (!entity.isOn()) {
                 turnOn(entity);
-            } else {
-                turnOff(entity);
             }
+            player.openGui(JSComputingMod.instance, 0, world, x, y, z);
             return true;
         } else {
             return false;
@@ -124,7 +122,7 @@ public class BlockComputer extends AbstractBlockContainer {
                 entity.setBlockMetadata(entity.getBlockMetadata() + 6);
             }
 
-            IComputer computer = new JavaScriptComputer(0);
+            IComputer computer = new JavaScriptComputer(0, entity);
             entity.tempID = computer.getTempID();
             entity.setComputerID(computer.getID());
             computer.init();
@@ -139,7 +137,35 @@ public class BlockComputer extends AbstractBlockContainer {
                 entity.setBlockMetadata(entity.getBlockMetadata() - 6);
             }
 
+            List players = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+            for (Object p : players) {
+                System.out.println("Iterate player " + p);
+                EntityPlayerMP player = (EntityPlayerMP) p;
+                if (player.openContainer instanceof ContainerComputer) {
+                    ContainerComputer container = (ContainerComputer) player.openContainer;
+                    System.out.println("Has container with computer " + container.getComputer().getComputer() + " entity is " + entity.getComputer().getTempID());
+
+                    if (container.getComputer().getComputer().equals(entity.getComputer())) {
+                        System.out.println("Close container");
+                        player.closeScreen();
+                    }
+                }
+            }
+
             ComputerManager.get(entity.tempID).close();
+        }
+    }
+
+    @Override
+    public void updateTick(World world, int x, int y, int z, Random random) {
+        System.out.println("Update");
+        TileEntity e = getTileEntity(world, x, y, z);
+        if (e != null && e instanceof TileEntityComputer) {
+            TileEntityComputer computer = ((TileEntityComputer) e);
+
+            if (computer.getBlockMetadata() >= 6) {
+                computer.setBlockMetadata(computer.getBlockMetadata() - 6);
+            }
         }
     }
 
