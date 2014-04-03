@@ -77,13 +77,15 @@ public class JavaScriptComputer implements IComputer {
                 JavaScriptEngine.contextEnter();
                 while (true) {
                     try {
-                        IComputingEvent event = queue.poll();
+                        IComputingEvent event = queue.take();
                         if (event != null) {
                             event.handle(JavaScriptComputer.this);
 
                             if (event instanceof ComputingEventShutDown) {
                                 break;
                             }
+                        } else {
+                            Thread.sleep(10);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
