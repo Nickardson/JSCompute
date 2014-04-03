@@ -8,7 +8,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityComputer extends AbstractTileEntity implements IInventory {
+public class TileEntityTerminalComputer extends AbstractTileEntity implements IInventory {
     public static String NAME = JSComputingMod.ASSET_ID + "ComputerEntity";
 
     public static String NBT_KEY_COMPUTER_ID = "compid";
@@ -22,7 +22,7 @@ public class TileEntityComputer extends AbstractTileEntity implements IInventory
 
     private ItemStack[] inv;
 
-    public TileEntityComputer() {
+    public TileEntityTerminalComputer() {
         inv = new ItemStack[0];
     }
 

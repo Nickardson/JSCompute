@@ -25,9 +25,9 @@ public class ChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket> {
         channels = NetworkRegistry.INSTANCE.newChannel(JSComputingMod.MOD_CHANNEL, new ChannelHandler());
     }
 
-    private int dID = 0;
     public ChannelHandler() {
-        addDiscriminator(dID++, PacketComputerInput.class);
+        addDiscriminator(0, PacketComputerInput.class);
+        addDiscriminator(1, PacketScreenUpdate.class);
     }
 
     @Override

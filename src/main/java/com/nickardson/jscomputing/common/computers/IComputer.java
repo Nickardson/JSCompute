@@ -2,8 +2,6 @@ package com.nickardson.jscomputing.common.computers;
 
 import com.nickardson.jscomputing.common.computers.events.IComputingEvent;
 
-import java.util.concurrent.BlockingQueue;
-
 public interface IComputer {
 
     /**
@@ -27,5 +25,9 @@ public interface IComputer {
 
     public void close();
 
+    public void tick();
+
     public boolean triggerEvent(IComputingEvent event);
+
+    public void onPlayerOpenGui();
 }

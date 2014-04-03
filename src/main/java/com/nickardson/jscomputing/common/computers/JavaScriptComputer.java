@@ -3,9 +3,6 @@ package com.nickardson.jscomputing.common.computers;
 import com.nickardson.jscomputing.common.computers.events.ComputingEventJavaScriptEval;
 import com.nickardson.jscomputing.common.computers.events.ComputingEventShutDown;
 import com.nickardson.jscomputing.common.computers.events.IComputingEvent;
-import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
-import com.nickardson.jscomputing.javascript.api.APIComputer;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
 import org.mozilla.javascript.ScriptableObject;
 
@@ -19,16 +16,11 @@ public class JavaScriptComputer implements IComputer {
 
     int id = 0;
     int tempID = ++GLOBAL_TEMP_ID;
-    private TileEntityComputer tileEntity;
 
     private Thread thread;
 
     public ScriptableObject getScope() {
         return scope;
-    }
-
-    public TileEntityComputer getTileEntity() {
-        return tileEntity;
     }
 
     public Thread getThread() {
@@ -44,16 +36,9 @@ public class JavaScriptComputer implements IComputer {
      */
     private BlockingQueue<IComputingEvent> queue;
 
-    public JavaScriptComputer(int id, TileEntityComputer entityComputer) {
-        this.tileEntity = entityComputer;
+    public JavaScriptComputer(int id) {
         this.queue = new ArrayBlockingQueue(1024);
-
         this.scope = JavaScriptEngine.createScope();
-
-        scope.defineProperty("print", new APIFunctionPrint(), ScriptableObject.READONLY);
-        scope.defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
-        scope.defineProperty("computer", new APIComputer(tileEntity), ScriptableObject.READONLY);
-
         this.id = id;
     }
 
@@ -84,6 +69,8 @@ public class JavaScriptComputer implements IComputer {
 
     @Override
     public void init() {
+        scope.defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
+
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -115,8 +102,18 @@ public class JavaScriptComputer implements IComputer {
     }
 
     @Override
+    public void onPlayerOpenGui() {
+
+    }
+
+    @Override
     public void close() {
         triggerEvent(new ComputingEventShutDown());
         ComputerManager.remove(this);
+    }
+
+    @Override
+    public void tick() {
+
     }
 }

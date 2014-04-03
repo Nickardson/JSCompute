@@ -2,8 +2,8 @@ package com.nickardson.jscomputing.common.blocks;
 
 import com.nickardson.jscomputing.JSComputingMod;
 import com.nickardson.jscomputing.common.computers.IComputer;
-import com.nickardson.jscomputing.common.computers.JavaScriptComputer;
-import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
+import com.nickardson.jscomputing.common.computers.TerminalComputer;
+import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -97,19 +97,21 @@ public class BlockComputer extends AbstractBlockContainer {
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float relX, float relY, float relZ) {
-        TileEntityComputer entity = (TileEntityComputer) getTileEntity(world, x, y, z);
+        TileEntityTerminalComputer entity = (TileEntityTerminalComputer) getTileEntity(world, x, y, z);
         if (entity != null) {
             if (!entity.isOn()) {
                 turnOn(entity);
             }
             player.openGui(JSComputingMod.instance, 0, world, x, y, z);
+            entity.getComputer().onPlayerOpenGui();
+
             return true;
         } else {
             return false;
         }
     }
 
-    public void turnOn(TileEntityComputer entity) {
+    public void turnOn(TileEntityTerminalComputer entity) {
         if (!entity.isOn()) {
             entity.setOn(true);
 
@@ -117,14 +119,14 @@ public class BlockComputer extends AbstractBlockContainer {
                 entity.setBlockMetadata(entity.getBlockMetadata() + 6);
             }
 
-            IComputer computer = new JavaScriptComputer(0, entity);
+            IComputer computer = new TerminalComputer(0, entity);
             entity.tempID = computer.getTempID();
             entity.setComputerID(computer.getID());
             computer.init();
         }
     }
 
-    public void turnOff(TileEntityComputer entity) {
+    public void turnOff(TileEntityTerminalComputer entity) {
         if (entity.isOn()) {
             entity.setOn(false);
 
@@ -140,8 +142,8 @@ public class BlockComputer extends AbstractBlockContainer {
     public void updateTick(World world, int x, int y, int z, Random random) {
         System.out.println("Update");
         TileEntity e = getTileEntity(world, x, y, z);
-        if (e != null && e instanceof TileEntityComputer) {
-            TileEntityComputer computer = ((TileEntityComputer) e);
+        if (e != null && e instanceof TileEntityTerminalComputer) {
+            TileEntityTerminalComputer computer = ((TileEntityTerminalComputer) e);
 
             if (computer.getBlockMetadata() >= 6) {
                 computer.setBlockMetadata(computer.getBlockMetadata() - 6);
@@ -151,6 +153,6 @@ public class BlockComputer extends AbstractBlockContainer {
 
     @Override
     public TileEntity createNewTileEntity(World var1, int var2) {
-        return new TileEntityComputer();
+        return new TileEntityTerminalComputer();
     }
 }

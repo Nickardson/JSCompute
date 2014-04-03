@@ -1,6 +1,5 @@
 package com.nickardson.jscomputing.common.computers;
 
-import com.nickardson.jscomputing.common.inventory.ContainerComputer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.server.MinecraftServer;
@@ -11,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ComputerManager {
+    public static Map<Integer, IComputer> getComputers() {
+        return computers;
+    }
+
     private static Map<Integer, IComputer> computers = new HashMap<Integer, IComputer>();
 
     public static boolean has(int tempID) {

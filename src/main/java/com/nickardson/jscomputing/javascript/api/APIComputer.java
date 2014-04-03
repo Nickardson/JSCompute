@@ -1,11 +1,11 @@
 package com.nickardson.jscomputing.javascript.api;
 
 import com.nickardson.jscomputing.JSComputingMod;
-import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
+import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 
 public class APIComputer {
-    private TileEntityComputer computer;
-    public APIComputer(TileEntityComputer computer) {
+    private TileEntityTerminalComputer computer;
+    public APIComputer(TileEntityTerminalComputer computer) {
         this.computer = computer;
     }
 

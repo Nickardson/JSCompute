@@ -4,8 +4,9 @@ import com.nickardson.jscomputing.common.CommonProxy;
 import com.nickardson.jscomputing.common.GuiHandler;
 import com.nickardson.jscomputing.common.blocks.BlockComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
-import com.nickardson.jscomputing.common.tileentity.TileEntityComputer;
+import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.common.computers.JavaScriptEngine;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -47,12 +48,13 @@ public class JSComputingMod
         JavaScriptEngine.setup();
 
         GameRegistry.registerBlock(computorz, computorz.getUnlocalizedName());
-        GameRegistry.registerTileEntity(TileEntityComputer.class, TileEntityComputer.NAME);
+        GameRegistry.registerTileEntity(TileEntityTerminalComputer.class, TileEntityTerminalComputer.NAME);
 
         ChannelHandler.init();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
 
+        FMLCommonHandler.instance().bus().register(new JSEventListener());
         MinecraftForge.EVENT_BUS.register(new JSEventListener());
 
         proxy.registerRenderers();
