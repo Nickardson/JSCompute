@@ -5,15 +5,14 @@ import com.nickardson.jscomputing.common.computers.ComputerManager;
 import com.nickardson.jscomputing.common.computers.IClientComputer;
 import com.nickardson.jscomputing.common.computers.IComputer;
 import com.nickardson.jscomputing.common.computers.IServerComputer;
-import cpw.mods.fml.common.FMLCommonHandler;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityTerminalComputer extends AbstractTileEntity implements IInventory {
+public class TileEntityTerminalComputer extends AbstractTileEntity {
     public static String NAME = JSComputingMod.ASSET_ID + "ComputerEntity";
 
+    /**
+     * NBT key name for Computer ID
+     */
     public static String NBT_KEY_COMPUTER_ID = "compid";
 
     /**
@@ -23,10 +22,7 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
      */
     public int computerID = -1;
 
-    private ItemStack[] inv;
-
     public TileEntityTerminalComputer() {
-        inv = new ItemStack[0];
     }
 
     public int getComputerID() {
@@ -54,7 +50,6 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
         }
 
         markDirty();
-        closeInventory();
     }
 
     public IComputer getComputer() {
@@ -92,84 +87,5 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
         if (tag.hasKey(NBT_KEY_COMPUTER_ID)) {
             setComputerID(tag.getInteger(NBT_KEY_COMPUTER_ID));
         }
-    }
-
-    @Override
-    public int getSizeInventory() {
-        return 0;
-    }
-
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-        return inv[slot];
-    }
-
-    @Override
-    public void setInventorySlotContents(int slot, ItemStack stack) {
-        inv[slot] = stack;
-        if (stack != null && stack.stackSize > getInventoryStackLimit()) {
-            stack.stackSize = getInventoryStackLimit();
-        }
-    }
-
-    @Override
-    public String getInventoryName() {
-        return JSComputingMod.ASSET_ID + "ComputerInventory";
-    }
-
-    @Override
-    public boolean hasCustomInventoryName() {
-        return false;
-    }
-
-    @Override
-    public ItemStack decrStackSize(int slot, int amt) {
-        ItemStack stack = getStackInSlot(slot);
-        if (stack != null) {
-            if (stack.stackSize <= amt) {
-                setInventorySlotContents(slot, null);
-            } else {
-                stack = stack.splitStack(amt);
-                if (stack.stackSize == 0) {
-                    setInventorySlotContents(slot, null);
-                }
-            }
-        }
-        return stack;
-    }
-
-    @Override
-    public ItemStack getStackInSlotOnClosing(int slot) {
-        ItemStack stack = getStackInSlot(slot);
-        if (stack != null) {
-            setInventorySlotContents(slot, null);
-        }
-        return stack;
-    }
-
-    @Override
-    public int getInventoryStackLimit() {
-        return 64;
-    }
-
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer player) {
-        return //worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this &&
-                player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 8 * 8;
-    }
-
-    @Override
-    public void openInventory() {
-
-    }
-
-    @Override
-    public void closeInventory() {
-
-    }
-
-    @Override
-    public boolean isItemValidForSlot(int var1, ItemStack var2) {
-        return false;
     }
 }
