@@ -1,11 +1,10 @@
 package com.nickardson.jscomputing.common.computers.events;
 
-import com.nickardson.jscomputing.common.computers.IComputer;
-import com.nickardson.jscomputing.common.computers.JavaScriptComputer;
+import com.nickardson.jscomputing.common.computers.IServerComputer;
+import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
 import org.mozilla.javascript.Context;
 
 public class ComputingEventJavaScriptEval implements IComputingEvent {
-
     private String code;
     private String source;
 
@@ -19,10 +18,15 @@ public class ComputingEventJavaScriptEval implements IComputingEvent {
     }
 
     @Override
-    public void handle(IComputer computer) {
-        if (computer instanceof JavaScriptComputer) {
-            JavaScriptComputer c = (JavaScriptComputer) computer;
+    public void handle(IServerComputer computer) {
+        if (computer instanceof ServerTerminalComputer) {
+            ServerTerminalComputer c = (ServerTerminalComputer) computer;
             Context.getCurrentContext().evaluateString(c.getScope(), code, source, 1, null);
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[event Eval: %s]", code);
     }
 }

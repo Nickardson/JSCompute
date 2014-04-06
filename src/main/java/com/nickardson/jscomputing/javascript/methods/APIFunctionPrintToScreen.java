@@ -55,7 +55,7 @@ public class APIFunctionPrintToScreen extends JavaScriptFunction {
             for (int i = 0; i < result.length() && x < computer.getWidth(); i++, x++) {
                 lines[y][x] = result.charAt(i);
             }
-            computer.setLines(lines);
+            computer.updateLines(lines);
         }
         return null;
     }

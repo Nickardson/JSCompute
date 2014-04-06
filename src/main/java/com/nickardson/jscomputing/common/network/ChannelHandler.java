@@ -28,6 +28,7 @@ public class ChannelHandler extends FMLIndexedMessageToMessageCodec<IPacket> {
     public ChannelHandler() {
         addDiscriminator(0, PacketComputerInput.class);
         addDiscriminator(1, PacketScreenUpdate.class);
+        addDiscriminator(2, PacketComputerOff.class);
     }
 
     @Override

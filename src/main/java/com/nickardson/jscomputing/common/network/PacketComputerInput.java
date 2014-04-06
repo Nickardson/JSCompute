@@ -1,7 +1,7 @@
 package com.nickardson.jscomputing.common.network;
 
+import com.nickardson.jscomputing.common.computers.IServerComputer;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
-import com.nickardson.jscomputing.common.computers.IComputer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PacketComputerInput extends PacketText {
@@ -22,9 +22,9 @@ public class PacketComputerInput extends PacketText {
         if (thePlayer.openContainer instanceof ContainerTerminalComputer) {
             ContainerTerminalComputer containerTerminalComputer = (ContainerTerminalComputer) thePlayer.openContainer;
 
-            IComputer c = containerTerminalComputer.getComputer();
+            IServerComputer c = (IServerComputer) containerTerminalComputer.getComputer();
             if (c != null) {
-                c.eval(text);
+                c.input(text);
             }
         }
     }

@@ -1,7 +1,14 @@
 package com.nickardson.jscomputing.common.computers.events;
 
-import com.nickardson.jscomputing.common.computers.IComputer;
+import com.nickardson.jscomputing.common.computers.IServerComputer;
 
+/**
+ * An event to be queued up to run on a computer.
+ */
 public interface IComputingEvent {
-    public void handle(IComputer computer);
+    /**
+     * Called when this event is handled.
+     * @param computer The computer this event is applied to.
+     */
+    public void handle(IServerComputer computer);
 }

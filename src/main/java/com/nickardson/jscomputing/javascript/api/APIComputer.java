@@ -1,6 +1,6 @@
 package com.nickardson.jscomputing.javascript.api;
 
-import com.nickardson.jscomputing.JSComputingMod;
+import com.nickardson.jscomputing.common.computers.events.ComputingEventShutDown;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 
 public class APIComputer {
@@ -10,7 +10,8 @@ public class APIComputer {
     }
 
     public void off() {
-        JSComputingMod.computorz.turnOff(computer);
+        computer.getServerComputer().triggerEvent(new ComputingEventShutDown(computer));
+        //JSComputingMod.computorz.turnOff(computer);
     }
 
     public int getId() {

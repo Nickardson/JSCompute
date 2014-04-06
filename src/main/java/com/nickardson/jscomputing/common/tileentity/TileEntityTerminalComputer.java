@@ -2,7 +2,10 @@ package com.nickardson.jscomputing.common.tileentity;
 
 import com.nickardson.jscomputing.JSComputingMod;
 import com.nickardson.jscomputing.common.computers.ComputerManager;
+import com.nickardson.jscomputing.common.computers.IClientComputer;
 import com.nickardson.jscomputing.common.computers.IComputer;
+import com.nickardson.jscomputing.common.computers.IServerComputer;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -18,7 +21,7 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
      * @example
      * Computers.get(computerID);
      */
-    public int tempID = 0;
+    public int computerID = -1;
 
     private ItemStack[] inv;
 
@@ -26,7 +29,6 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
         inv = new ItemStack[0];
     }
 
-    int computerID;
     public int getComputerID() {
         return computerID;
     }
@@ -37,7 +39,15 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
     }
 
     public IComputer getComputer() {
-        return ComputerManager.get(tempID);
+        return ComputerManager.getComputer(computerID);
+    }
+
+    public IClientComputer getClientComputer() {
+        return ComputerManager.getClientComputer(computerID);
+    }
+
+    public IServerComputer getServerComputer() {
+        return ComputerManager.getServerComputer(computerID);
     }
 
     boolean on;
@@ -51,13 +61,18 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
     @Override
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        tag.setInteger(NBT_KEY_COMPUTER_ID, computerID);
+
+        if (computerID >= 0) {
+            tag.setInteger(NBT_KEY_COMPUTER_ID, computerID);
+        }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        computerID = tag.getInteger(NBT_KEY_COMPUTER_ID);
+        if (tag.hasKey(NBT_KEY_COMPUTER_ID)) {
+            computerID = tag.getInteger(NBT_KEY_COMPUTER_ID);
+        }
     }
 
     @Override

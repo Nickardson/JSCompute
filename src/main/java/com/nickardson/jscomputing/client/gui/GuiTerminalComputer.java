@@ -2,7 +2,8 @@ package com.nickardson.jscomputing.client.gui;
 
 import com.nickardson.jscomputing.client.rendering.RenderUtilities;
 import com.nickardson.jscomputing.client.rendering.UnicodeFontRenderer;
-import com.nickardson.jscomputing.common.computers.TerminalComputer;
+import com.nickardson.jscomputing.common.computers.ClientTerminalComputer;
+import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketComputerInput;
@@ -23,10 +24,10 @@ public class GuiTerminalComputer extends GuiContainer {
     private String text = "";
 
     private TileEntityTerminalComputer terminalComputer;
-    private TerminalComputer computer;
+    private ClientTerminalComputer computer;
 
-    private int screenWidth;
-    private int screenHeight;
+    private int screenWidth = 0;
+    private int screenHeight = 0;
 
     public GuiTerminalComputer(EntityPlayer player, TileEntityTerminalComputer entityTerminalComputer) {
         super(new ContainerTerminalComputer(player, entityTerminalComputer));
@@ -42,9 +43,12 @@ public class GuiTerminalComputer extends GuiContainer {
 
         this.terminalComputer = entityTerminalComputer;
 
-        this.computer = (TerminalComputer) entityTerminalComputer.getComputer();
-        screenWidth = computer.getWidth();
-        screenHeight = computer.getHeight();
+        this.computer = (ClientTerminalComputer) entityTerminalComputer.getClientComputer();
+
+        if (computer != null) {
+            screenWidth = computer.getWidth();
+            screenHeight = computer.getHeight();
+        }
     }
 
     private boolean isValidKey(int key) {
@@ -83,8 +87,8 @@ public class GuiTerminalComputer extends GuiContainer {
         glEnable(GL_TEXTURE_2D);
 
         //char[][] lines = computer.getLines();
-        int xPos = RenderUtilities.getWidth() / 2,
-            yPos = RenderUtilities.getHeight() / 2 + fontRendererObj.FONT_HEIGHT / 2;
+        int xPos = 10,
+            yPos = 10;
         char[][] lines = computer.getLines();
         for (int y = 0; y < screenHeight; y++) {
             String s = new String(lines[y]);

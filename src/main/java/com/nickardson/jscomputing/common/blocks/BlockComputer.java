@@ -1,9 +1,10 @@
 package com.nickardson.jscomputing.common.blocks;
 
 import com.nickardson.jscomputing.JSComputingMod;
-import com.nickardson.jscomputing.common.computers.IComputer;
-import com.nickardson.jscomputing.common.computers.TerminalComputer;
+import com.nickardson.jscomputing.common.GuiHandler;
+import com.nickardson.jscomputing.common.computers.*;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -17,8 +18,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import java.util.Random;
 
 public class BlockComputer extends AbstractBlockContainer {
     public static String NAME = JSComputingMod.ASSET_ID + "Computer";
@@ -98,56 +97,57 @@ public class BlockComputer extends AbstractBlockContainer {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float relX, float relY, float relZ) {
         TileEntityTerminalComputer entity = (TileEntityTerminalComputer) getTileEntity(world, x, y, z);
+
         if (entity != null) {
             if (!entity.isOn()) {
                 turnOn(entity);
             }
-            player.openGui(JSComputingMod.instance, 0, world, x, y, z);
-            entity.getComputer().onPlayerOpenGui();
 
-            return true;
-        } else {
-            return false;
+            if (entity.getComputer() != null) {
+                player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINALCOMPUTER, world, x, y, z);
+
+                if (!world.isRemote && entity.getServerComputer() != null) {
+                    entity.getServerComputer().onPlayerOpenGui();
+                }
+                return true;
+            }
         }
+        return false;
     }
 
     public void turnOn(TileEntityTerminalComputer entity) {
-        if (!entity.isOn()) {
-            entity.setOn(true);
+        entity.setOn(true);
 
-            if (entity.getBlockMetadata() < 6) {
-                entity.setBlockMetadata(entity.getBlockMetadata() + 6);
-            }
-
-            IComputer computer = new TerminalComputer(0, entity);
-            entity.tempID = computer.getTempID();
-            entity.setComputerID(computer.getID());
-            computer.init();
+        if (entity.getBlockMetadata() < 6) {
+            entity.setBlockMetadata(entity.getBlockMetadata() + 6);
         }
+
+        IComputer computer;
+        if (!entity.getWorldObj().isRemote) {
+            int nextID = ComputerManager.getNextAvailableID();
+            computer = new ServerTerminalComputer(nextID, entity);
+            entity.setComputerID(nextID);
+        } else {
+            computer = new ClientTerminalComputer(-1, entity);
+            // TODO: Set computer id
+        }
+        computer.start();
+        entity.update();
     }
 
     public void turnOff(TileEntityTerminalComputer entity) {
-        if (entity.isOn()) {
-            entity.setOn(false);
+        entity.setOn(false);
 
-            if (entity.getBlockMetadata() >= 6) {
-                entity.setBlockMetadata(entity.getBlockMetadata() - 6);
-            }
-
-            entity.getComputer().close();
+        IClientComputer clientComputer = ComputerManager.getClientComputer(entity.getComputerID());
+        if (clientComputer != null) {
+            clientComputer.stop();
+            ComputerManager.removeClientComputer(clientComputer.getID());
         }
-    }
 
-    @Override
-    public void updateTick(World world, int x, int y, int z, Random random) {
-        System.out.println("Update");
-        TileEntity e = getTileEntity(world, x, y, z);
-        if (e != null && e instanceof TileEntityTerminalComputer) {
-            TileEntityTerminalComputer computer = ((TileEntityTerminalComputer) e);
-
-            if (computer.getBlockMetadata() >= 6) {
-                computer.setBlockMetadata(computer.getBlockMetadata() - 6);
-            }
+        IServerComputer serverComputer = ComputerManager.getServerComputer(entity.getComputerID());
+        if (serverComputer != null) {
+            serverComputer.stop();
+            ComputerManager.removeServerComputer(serverComputer.getID());
         }
     }
 

@@ -1,33 +1,22 @@
 package com.nickardson.jscomputing.common.computers;
 
-import com.nickardson.jscomputing.common.computers.events.IComputingEvent;
-
+/**
+ * A basic, extensible computer.
+ */
 public interface IComputer {
-
     /**
-     * Gets the static ID of the computer.
+     * Gets the ID of the computer.
      */
     public int getID();
 
-    public int getTempID();
+    /**
+     * Starts this computer.
+     */
+    public void start();
 
     /**
-     * Evaluates code.
-     * @param code
+     * Stops this computer.
      */
-    public void eval(String code);
+    public void stop();
 
-    public Object get(String key);
-
-    public void put(String key, Object value);
-
-    public void init();
-
-    public void close();
-
-    public void tick();
-
-    public boolean triggerEvent(IComputingEvent event);
-
-    public void onPlayerOpenGui();
 }

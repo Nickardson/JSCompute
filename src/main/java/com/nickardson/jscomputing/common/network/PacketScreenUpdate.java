@@ -1,24 +1,48 @@
 package com.nickardson.jscomputing.common.network;
 
+import com.nickardson.jscomputing.common.computers.IComputer;
+import com.nickardson.jscomputing.common.computers.IServerComputer;
 import com.nickardson.jscomputing.common.computers.IScreenedComputer;
 import com.nickardson.jscomputing.common.inventory.IContainerComputer;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PacketScreenUpdate extends PacketCharArray {
 
+    int id = 0;
+
     public PacketScreenUpdate() {
     }
 
-    public PacketScreenUpdate(char[][] array) {
+    public PacketScreenUpdate(int id, char[][] array) {
+        this.id = id;
         this.array = array;
     }
 
     @Override
+    public void readBytes(ByteBuf bytes) {
+        id = bytes.readInt();
+
+        super.readBytes(bytes);
+    }
+
+    @Override
+    public void writeBytes(ByteBuf bytes) {
+        bytes.writeInt(id);
+
+        super.writeBytes(bytes);
+    }
+
+    @Override
     public void executeClient(EntityPlayer thePlayer) {
+        // Send updates to all players with the related computer's GUI open.
         if (thePlayer.openContainer instanceof IContainerComputer) {
             IContainerComputer container = (IContainerComputer) thePlayer.openContainer;
-            if (container.getComputer() instanceof IScreenedComputer) {
-                ((IScreenedComputer) container.getComputer()).setLines(array);
+            IComputer computer = container.getComputer();
+            if (computer instanceof IScreenedComputer) {
+                if (computer.getID() == id) {
+                    ((IScreenedComputer) computer).setLines(array);
+                }
             }
         }
     }
