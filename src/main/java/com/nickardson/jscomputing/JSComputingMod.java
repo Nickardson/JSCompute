@@ -14,7 +14,9 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 
 @Mod(
         modid = JSComputingMod.MOD_ID,
@@ -24,41 +26,84 @@ import net.minecraft.creativetab.CreativeTabs;
 
 public class JSComputingMod
 {
+    /**
+     * The
+     */
     public static final String MOD_ID = "JSComputing";
+
+    /**
+     * Prefix for assets.
+     */
     public static final String ASSET_ID = "jscomputing";
+
+    /**
+     * Network ID for the ChannelHandler.
+     */
     public static final String MOD_CHANNEL = ASSET_ID;
+
+    /**
+     * Mod Version
+     */
     public static final String VERSION = "0.0";
 
+    /**
+     * The Singleton instance of JSComputing.
+     */
     @Mod.Instance
     public static JSComputingMod instance;
 
     @SidedProxy(clientSide = "com.nickardson.jscomputing.client.ClientProxy", serverSide = "com.nickardson.jscomputing.CommonProxy")
     public static CommonProxy proxy;
 
-    public static BlockComputer computorz;
-
-    public static ItemComputerReader itemComputerReader;
-
+    /**
+     * The Creative tab where all items and blocks go.
+     */
     public static CreativeTabs creativeTab = new JSComputingCreativeTab();
 
     public JSEventListener eventListener;
 
-    public static int TERMINAL_WIDTH = 50;
-    public static int TERMINAL_HEIGHT = 25;
+    /**
+     * Container for blocks.
+     */
+    public static class Blocks {
+        public static BlockComputer computer;
 
+        /**
+         * Register a block with Forge.
+         * @param block The block to register.
+         */
+        public static void register(Block block) {
+            GameRegistry.registerBlock(block, block.getUnlocalizedName());
+        }
+    }
+
+    /**
+     * Container for items.
+     */
+    public static class Items {
+        public static ItemComputerReader computerReader;
+
+        /**
+         * Register an item with Forge.
+         * @param item The item to register.
+         */
+        public static void register(Item item) {
+            GameRegistry.registerItem(item, item.getUnlocalizedName());
+        }
+    }
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         instance = this;
 
-        computorz = new BlockComputer();
+        Blocks.computer = new BlockComputer();
+        Blocks.register(Blocks.computer);
 
-        itemComputerReader = new ItemComputerReader();
-        GameRegistry.registerItem(itemComputerReader, itemComputerReader.getUnlocalizedName());
+        Items.computerReader = new ItemComputerReader();
+        Items.register(Items.computerReader);
 
         JavaScriptEngine.setup();
 
-        GameRegistry.registerBlock(computorz, computorz.getUnlocalizedName());
         GameRegistry.registerTileEntity(TileEntityTerminalComputer.class, TileEntityTerminalComputer.NAME);
 
         ChannelHandler.init();

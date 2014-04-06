@@ -4,7 +4,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import java.io.File;
@@ -55,6 +54,11 @@ public class ComputerManager {
         }
     }
 
+    /**
+     * Gets a computer on the current side (client / server).
+     * @param id The ID of the computer.
+     * @return The found computer, or null.
+     */
     public static IComputer getComputer(int id) {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
             return getClientComputer(id);
@@ -106,11 +110,55 @@ public class ComputerManager {
         serverComputers.put(computer.getID(), computer);
     }
 
-    public static File getWorldDirectory() {
-        return DimensionManager.getWorlds()[0].getSaveHandler().getWorldDirectory();
+    /**
+     * Changes the ID of both client and server computers.
+     * @param oldID The ID of the computers.
+     * @param newID The new ID to assign.
+     */
+    public static void changeID(int oldID, int newID) {
+        if (newID == oldID) {
+            return;
+        }
+
+        IClientComputer client = ComputerManager.getClientComputer(oldID);
+        IServerComputer server = ComputerManager.getServerComputer(oldID);
+
+        ComputerManager.removeComputer(oldID);
+
+        oldID = newID;
+
+        if (client != null) {
+            client.setID(oldID);
+            ComputerManager.addClientComputer(client);
+        }
+        if (server != null) {
+            server.setID(oldID);
+            ComputerManager.addServerComputer(server);
+        }
     }
 
+    /**
+     * Gets the directory of the main world, or null if no worlds are available.
+     * @return The file location of the world.
+     */
+    public static File getWorldDirectory() {
+        try {
+            return DimensionManager.getWorlds()[0].getSaveHandler().getWorldDirectory();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * The initial ID of created computers.
+     */
     private static int ID = 1337;
+
+    /**
+     * Gets the next available ID for a new computer.
+     * @return The available ID.
+     */
     public static int getNextAvailableID() {
         File f = new File(getWorldDirectory(), "jscomputingid.txt");
         try {

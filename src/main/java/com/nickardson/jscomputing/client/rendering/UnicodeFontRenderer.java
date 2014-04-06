@@ -1,12 +1,10 @@
 package com.nickardson.jscomputing.client.rendering;
 
-import cpw.mods.fml.relauncher.SideOnly;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.font.effects.Effect;
 
 import java.awt.*;
-import java.io.InputStream;
 import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.*;

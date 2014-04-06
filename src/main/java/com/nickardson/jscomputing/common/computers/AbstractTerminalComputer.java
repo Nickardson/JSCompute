@@ -1,11 +1,12 @@
 package com.nickardson.jscomputing.common.computers;
 
-import com.nickardson.jscomputing.JSComputingMod;
-
 /**
  * A computer which implements a Terminal screen.
  */
 public abstract class AbstractTerminalComputer extends AbstractComputer implements IScreenedComputer {
+    public static int TERMINAL_WIDTH = 50;
+    public static int TERMINAL_HEIGHT = 25;
+
     char[][] lines;
 
     int cursorX = 0;
@@ -29,12 +30,12 @@ public abstract class AbstractTerminalComputer extends AbstractComputer implemen
 
     @Override
     public int getWidth() {
-        return JSComputingMod.TERMINAL_WIDTH;
+        return TERMINAL_WIDTH;
     }
 
     @Override
     public int getHeight() {
-        return JSComputingMod.TERMINAL_HEIGHT;
+        return TERMINAL_HEIGHT;
     }
 
     @Override

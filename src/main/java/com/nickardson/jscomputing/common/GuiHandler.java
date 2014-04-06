@@ -9,16 +9,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public class GuiHandler implements IGuiHandler {
-
-    public static final int GUI_TERMINALCOMPUTER = 1;
+    /**
+     * The GUI of a TileEntityTerminalComputer.
+     */
+    public static final int GUI_TERMINAL_COMPUTER = 1;
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         TileEntity e = world.getTileEntity(x, y, z);
 
         switch (ID) {
-            case GUI_TERMINALCOMPUTER:
-                return new ContainerTerminalComputer(player, (TileEntityTerminalComputer) e);
+            case GUI_TERMINAL_COMPUTER:
+                return new ContainerTerminalComputer((TileEntityTerminalComputer) e);
             default:
                 return null;
         }
@@ -29,8 +31,8 @@ public class GuiHandler implements IGuiHandler {
         TileEntity e = world.getTileEntity(x, y, z);
 
         switch (ID) {
-            case GUI_TERMINALCOMPUTER:
-                return new GuiTerminalComputer(player, (TileEntityTerminalComputer) e);
+            case GUI_TERMINAL_COMPUTER:
+                return new GuiTerminalComputer((TileEntityTerminalComputer) e);
             default:
                 return null;
         }

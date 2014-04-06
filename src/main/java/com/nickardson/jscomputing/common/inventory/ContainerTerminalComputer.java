@@ -16,7 +16,7 @@ public class ContainerTerminalComputer extends Container implements IContainerCo
 
     protected TileEntityTerminalComputer tileEntity;
 
-    public ContainerTerminalComputer(EntityPlayer player, TileEntityTerminalComputer computer) {
+    public ContainerTerminalComputer(TileEntityTerminalComputer computer) {
         this.tileEntity = computer;
     }
 

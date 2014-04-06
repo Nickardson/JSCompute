@@ -10,6 +10,6 @@ public class JSComputingCreativeTab extends CreativeTabs {
 
     @Override
     public Item getTabIconItem() {
-        return Item.getItemFromBlock(JSComputingMod.computorz);
+        return Item.getItemFromBlock(JSComputingMod.Blocks.computer);
     }
 }

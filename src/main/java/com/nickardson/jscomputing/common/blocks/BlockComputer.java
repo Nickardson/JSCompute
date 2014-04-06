@@ -103,7 +103,7 @@ public class BlockComputer extends AbstractBlockContainer {
             }
 
             if (entity.getServerComputer() != null) {
-                player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINALCOMPUTER, world, x, y, z);
+                player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINAL_COMPUTER, world, x, y, z);
 
                 if (!world.isRemote && entity.getServerComputer() != null) {
                     entity.getServerComputer().onPlayerOpenGui();
@@ -114,6 +114,10 @@ public class BlockComputer extends AbstractBlockContainer {
         return false;
     }
 
+    /**
+     * Turns this computer on, creating a new computer object.
+     * @param entity The TileEntity representing the computer.
+     */
     public void turnOn(TileEntityTerminalComputer entity) {
         entity.setOn(true);
 
@@ -138,6 +142,10 @@ public class BlockComputer extends AbstractBlockContainer {
         computer.start();
     }
 
+    /**
+     * Turns this computer off, removing the existing computer if any.
+     * @param entity The TileEntity representing the computer.
+     */
     public void turnOff(TileEntityTerminalComputer entity) {
         entity.setOn(false);
 

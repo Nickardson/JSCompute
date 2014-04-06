@@ -22,52 +22,59 @@ public class TileEntityTerminalComputer extends AbstractTileEntity {
      */
     public int computerID = -1;
 
-    public TileEntityTerminalComputer() {
-    }
-
+    /**
+     * Gets the ID of the computer this TileEntity represents.
+     */
     public int getComputerID() {
         return computerID;
     }
+
+    /**
+     * Changes the ID of the computer this TileEntity represents, and that of the computers themselves.
+     * @param data The new ID.
+     */
     public void setComputerID(int data) {
-        if (data == computerID) {
-            return;
-        }
-
-        IClientComputer client = ComputerManager.getClientComputer(computerID);
-        IServerComputer server = ComputerManager.getServerComputer(computerID);
-
-        ComputerManager.removeComputer(computerID);
-
+        ComputerManager.changeID(computerID, data);
         computerID = data;
-
-        if (client != null) {
-            client.setID(computerID);
-            ComputerManager.addClientComputer(client);
-        }
-        if (server != null) {
-            server.setID(computerID);
-            ComputerManager.addServerComputer(server);
-        }
-
         markDirty();
     }
 
+    /**
+     * Gets the computer corresponding to this TileEntity, on the relevant side.
+     * @return The matching computer.
+     */
     public IComputer getComputer() {
         return ComputerManager.getComputer(computerID);
     }
 
+    /**
+     * Gets the computer corresponding to this TileEntity, on the Client side.
+     * @return The matching computer.
+     */
     public IClientComputer getClientComputer() {
         return ComputerManager.getClientComputer(computerID);
     }
 
+    /**
+     * Gets the computer corresponding to this TileEntity, on the Server side.
+     * @return The matching computer.
+     */
     public IServerComputer getServerComputer() {
         return ComputerManager.getServerComputer(computerID);
     }
 
     boolean on;
+
+    /**
+     * Gets whether the computer is on.
+     */
     public boolean isOn() {
         return on;
     }
+
+    /**
+     * Sets whether the computer is on.
+     */
     public void setOn(boolean data) {
         this.on = data;
     }

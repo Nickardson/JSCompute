@@ -21,7 +21,7 @@ public class ComputingEventShutDown implements IComputingEvent {
 
     @Override
     public void handle(IServerComputer computer) {
-        JSComputingMod.computorz.turnOff(entity);
+        JSComputingMod.Blocks.computer.turnOff(entity);
 
         final PacketComputerOff killPacket = new PacketComputerOff(computer.getID());
         JSComputingMod.instance.eventListener.queuedActions.add(new Runnable() {

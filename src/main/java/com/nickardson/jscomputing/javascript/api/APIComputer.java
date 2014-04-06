@@ -11,7 +11,6 @@ public class APIComputer {
 
     public void off() {
         computer.getServerComputer().triggerEvent(new ComputingEventShutDown(computer));
-        //JSComputingMod.computorz.turnOff(computer);
     }
 
     public int getId() {
