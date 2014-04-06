@@ -11,7 +11,7 @@ public abstract class AbstractTileEntity extends TileEntity {
     public Packet getDescriptionPacket() {
         NBTTagCompound tagCompound = new NBTTagCompound();
         writeToNBT(tagCompound);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, tagCompound);
     }
 
     @Override
@@ -30,8 +30,10 @@ public abstract class AbstractTileEntity extends TileEntity {
      * Sends a block update
      * 1 - Notifies neighbors of block change
      * 2 - Marks the block to be updated
-     * 3 - Marks the block to be updated AND Notifies neighbors of block change
-     * 4 - Just sets the block ID or metadata
+     * 4 - Sets the block ID or metadata
+     *
+     * 1 | 2 = 3 - Marks the block to be updated AND Notifies neighbors of block change
+     *
      */
     public void setBlockMetadata(int meta) {
         getWorldObj().setBlockMetadataWithNotify(xCoord, yCoord, zCoord, meta, 2);

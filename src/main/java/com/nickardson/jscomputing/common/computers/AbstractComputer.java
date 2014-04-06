@@ -7,11 +7,16 @@ public abstract class AbstractComputer implements IComputer {
     int id = 0;
 
     public AbstractComputer(int id) {
-        this.id = id;
+        setID(id);
     }
 
     @Override
     public int getID() {
         return id;
+    }
+
+    @Override
+    public void setID(int id) {
+        this.id = id;
     }
 }

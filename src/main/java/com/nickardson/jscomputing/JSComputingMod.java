@@ -3,12 +3,11 @@ package com.nickardson.jscomputing;
 import com.nickardson.jscomputing.common.CommonProxy;
 import com.nickardson.jscomputing.common.GuiHandler;
 import com.nickardson.jscomputing.common.blocks.BlockComputer;
-import com.nickardson.jscomputing.common.computers.ComputerManager;
+import com.nickardson.jscomputing.common.items.ItemComputerReader;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.common.computers.JavaScriptEngine;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.FMLModContainer;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
@@ -16,9 +15,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraftforge.common.MinecraftForge;
-
-import java.io.File;
 
 @Mod(
         modid = JSComputingMod.MOD_ID,
@@ -41,6 +37,8 @@ public class JSComputingMod
 
     public static BlockComputer computorz;
 
+    public static ItemComputerReader itemComputerReader;
+
     public static CreativeTabs creativeTab = new JSComputingCreativeTab();
 
     public JSEventListener eventListener;
@@ -54,6 +52,9 @@ public class JSComputingMod
         instance = this;
 
         computorz = new BlockComputer();
+
+        itemComputerReader = new ItemComputerReader();
+        GameRegistry.registerItem(itemComputerReader, itemComputerReader.getUnlocalizedName());
 
         JavaScriptEngine.setup();
 

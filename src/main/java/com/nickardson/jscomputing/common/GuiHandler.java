@@ -30,9 +30,7 @@ public class GuiHandler implements IGuiHandler {
 
         switch (ID) {
             case GUI_TERMINALCOMPUTER:
-                if (((TileEntityTerminalComputer) e).getComputer() != null) {
-                    return new GuiTerminalComputer(player, (TileEntityTerminalComputer) e);
-                }
+                return new GuiTerminalComputer(player, (TileEntityTerminalComputer) e);
             default:
                 return null;
         }

@@ -65,7 +65,6 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     public ServerTerminalComputer(int id, TileEntityTerminalComputer entityComputer) {
         super(id);
 
-        entityComputer.setComputerID(id);
         this.tileEntity = entityComputer;
         this.queue = new ArrayBlockingQueue<IComputingEvent>(1024);
         this.scope = JavaScriptEngine.createScope();

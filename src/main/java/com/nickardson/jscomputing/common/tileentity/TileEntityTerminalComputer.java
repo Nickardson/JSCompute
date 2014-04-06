@@ -33,8 +33,28 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
         return computerID;
     }
     public void setComputerID(int data) {
+        if (data == computerID) {
+            return;
+        }
+
+        IClientComputer client = ComputerManager.getClientComputer(computerID);
+        IServerComputer server = ComputerManager.getServerComputer(computerID);
+
+        ComputerManager.removeComputer(computerID);
+
         computerID = data;
+
+        if (client != null) {
+            client.setID(computerID);
+            ComputerManager.addClientComputer(client);
+        }
+        if (server != null) {
+            server.setID(computerID);
+            ComputerManager.addServerComputer(server);
+        }
+
         markDirty();
+        update();
         closeInventory();
     }
 
@@ -71,7 +91,7 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         if (tag.hasKey(NBT_KEY_COMPUTER_ID)) {
-            computerID = tag.getInteger(NBT_KEY_COMPUTER_ID);
+            setComputerID(tag.getInteger(NBT_KEY_COMPUTER_ID));
         }
     }
 

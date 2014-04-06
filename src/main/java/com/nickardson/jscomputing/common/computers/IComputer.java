@@ -10,6 +10,11 @@ public interface IComputer {
     public int getID();
 
     /**
+     * Sets the ID of the computer.
+     */
+    public void setID(int id);
+
+    /**
      * Starts this computer.
      */
     public void start();

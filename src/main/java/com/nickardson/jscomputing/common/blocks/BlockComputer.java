@@ -4,7 +4,6 @@ import com.nickardson.jscomputing.JSComputingMod;
 import com.nickardson.jscomputing.common.GuiHandler;
 import com.nickardson.jscomputing.common.computers.*;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -103,7 +102,7 @@ public class BlockComputer extends AbstractBlockContainer {
                 turnOn(entity);
             }
 
-            if (entity.getComputer() != null) {
+            if (entity.getServerComputer() != null) {
                 player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINALCOMPUTER, world, x, y, z);
 
                 if (!world.isRemote && entity.getServerComputer() != null) {
@@ -123,16 +122,20 @@ public class BlockComputer extends AbstractBlockContainer {
         }
 
         IComputer computer;
+
+        int nextID = entity.getComputerID();
         if (!entity.getWorldObj().isRemote) {
-            int nextID = ComputerManager.getNextAvailableID();
+            if (nextID == -1) {
+                nextID = ComputerManager.getNextAvailableID();
+            }
             computer = new ServerTerminalComputer(nextID, entity);
-            entity.setComputerID(nextID);
+            entity.update();
         } else {
-            computer = new ClientTerminalComputer(-1, entity);
+            computer = new ClientTerminalComputer(nextID, entity);
             // TODO: Set computer id
         }
+        entity.setComputerID(computer.getID());
         computer.start();
-        entity.update();
     }
 
     public void turnOff(TileEntityTerminalComputer entity) {

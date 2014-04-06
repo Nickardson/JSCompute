@@ -8,10 +8,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * Manages the running computers.
@@ -113,9 +112,22 @@ public class ComputerManager {
 
     private static int ID = 1337;
     public static int getNextAvailableID() {
-        File f = getWorldDirectory();
-        System.out.println(f);
-        return ID++;
+        File f = new File(getWorldDirectory(), "jscomputingid.txt");
+        try {
+            if (f.exists()) {
+                Scanner s = new Scanner(f).useDelimiter("\\Z");
+                ID = Integer.parseInt(s.next()) + 1;
+                s.close();
+            }
+
+            PrintWriter writer = new PrintWriter(f);
+            writer.println(ID);
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return ID;
     }
 
     /**
