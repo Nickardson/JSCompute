@@ -54,7 +54,6 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
         }
 
         markDirty();
-        update();
         closeInventory();
     }
 
