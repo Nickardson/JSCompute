@@ -1,7 +1,6 @@
 package com.nickardson.jscomputing.common.network;
 
 import com.nickardson.jscomputing.common.computers.IComputer;
-import com.nickardson.jscomputing.common.computers.IServerComputer;
 import com.nickardson.jscomputing.common.computers.IScreenedComputer;
 import com.nickardson.jscomputing.common.inventory.IContainerComputer;
 import io.netty.buffer.ByteBuf;
@@ -15,8 +14,8 @@ public class PacketScreenUpdate extends PacketCharArray {
     }
 
     public PacketScreenUpdate(int id, char[][] array) {
+        super(array);
         this.id = id;
-        this.array = array;
     }
 
     @Override

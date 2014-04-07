@@ -51,7 +51,7 @@ public class JSComputingMod
     @Mod.Instance
     public static JSComputingMod instance;
 
-    @SidedProxy(clientSide = "com.nickardson.jscomputing.client.ClientProxy", serverSide = "com.nickardson.jscomputing.CommonProxy")
+    @SidedProxy(clientSide = "com.nickardson.jscomputing.client.ClientProxy", serverSide = "com.nickardson.jscomputing.common.CommonProxy")
     public static CommonProxy proxy;
 
     /**

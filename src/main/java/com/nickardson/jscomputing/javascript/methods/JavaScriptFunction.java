@@ -2,7 +2,6 @@ package com.nickardson.jscomputing.javascript.methods;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeFunction;
 import org.mozilla.javascript.Scriptable;
@@ -20,6 +19,11 @@ public abstract class JavaScriptFunction extends NativeFunction {
             return null;
         }
         return invoke(cx, scope, thisObj, args);
+    }
+
+    @Override
+    public Object getDefaultValue(Class<?> typeHint) {
+        return "[function]";
     }
 
     /**

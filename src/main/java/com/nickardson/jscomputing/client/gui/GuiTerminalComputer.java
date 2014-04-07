@@ -6,6 +6,7 @@ import com.nickardson.jscomputing.common.computers.ClientTerminalComputer;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketComputerInput;
+import com.nickardson.jscomputing.common.network.PacketComputerKey;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import org.lwjgl.input.Keyboard;
@@ -20,6 +21,11 @@ public class GuiTerminalComputer extends GuiContainer {
      * The font to render terminal inputText in.
      */
     private UnicodeFontRenderer font = null;
+
+    /**
+     * Whether keys are sent to the developer console.
+     */
+    private boolean devConsoleOpen = false;
 
     /**
      * Developer console field inputText.
@@ -72,7 +78,7 @@ public class GuiTerminalComputer extends GuiContainer {
      * @param key The LWJGL Key ID of the key to check.
      * @return Whether the key is valid input.
      */
-    private boolean isValidKey(int key) {
+    private boolean isValidDevConsoleKey(int key) {
         return (key >= Keyboard.KEY_1 && key <= Keyboard.KEY_EQUALS) ||
                 (key >= Keyboard.KEY_Q && key <= Keyboard.KEY_RBRACKET) ||
                 (key >= Keyboard.KEY_A && key <= Keyboard.KEY_APOSTROPHE) ||
@@ -84,18 +90,40 @@ public class GuiTerminalComputer extends GuiContainer {
                 (key == Keyboard.KEY_MULTIPLY) ||
                 (key == Keyboard.KEY_SPACE);
     }
+
+    /**
+     * Gets whether the given LWJGL Key ID should be consumed by the computer.
+     * @param key The LWJGL Key ID of the key to check.
+     * @return Whether the key is valid input.
+     */
+    private boolean isValidComputerKey(int key) {
+        return key != Keyboard.KEY_ESCAPE;
+    }
     
     @Override
     protected void keyTyped(char character, int key) {
-        if (key == Keyboard.KEY_BACK && inputText.length() > 0) {
-            inputText = inputText.substring(0, inputText.length() - 1);
-        } else if (key == Keyboard.KEY_RETURN) {
-            onInput(inputText);
-            inputText = "";
-        } else if (isValidKey(key)) {
-            inputText += Character.toString(character);
+        if (key == Keyboard.KEY_GRAVE) {
+            devConsoleOpen = !devConsoleOpen;
+            return;
+        }
+
+        if (devConsoleOpen) {
+            if (key == Keyboard.KEY_BACK && inputText.length() > 0) {
+                inputText = inputText.substring(0, inputText.length() - 1);
+            } else if (key == Keyboard.KEY_RETURN) {
+                onInput(inputText);
+                inputText = "";
+            } else if (isValidDevConsoleKey(key)) {
+                inputText += Character.toString(character);
+            } else {
+                super.keyTyped(character, key);
+            }
         } else {
-            super.keyTyped(character, key);
+            if (isValidComputerKey(key)) {
+                ChannelHandler.sendToServer(new PacketComputerKey(key, character, true));
+            } else {
+                super.keyTyped(character, key);
+            }
         }
     }
 
@@ -128,8 +156,22 @@ public class GuiTerminalComputer extends GuiContainer {
             yPos += 20;
         }
 
-        fontRendererObj.drawString(inputText, RenderUtilities.getWidth() / 2 - fontRendererObj.getStringWidth(inputText) / 2, RenderUtilities.getHeight() / 2 - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFF);
+        if (devConsoleOpen) {
+            fontRendererObj.drawString("> " + inputText, RenderUtilities.getWidth() / 2 - fontRendererObj.getStringWidth(inputText) / 2, RenderUtilities.getHeight() / 2 - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFF);
+        }
 
         RenderUtilities.unprepare2D();
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        Keyboard.enableRepeatEvents(true);
+    }
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        Keyboard.enableRepeatEvents(false);
     }
 }

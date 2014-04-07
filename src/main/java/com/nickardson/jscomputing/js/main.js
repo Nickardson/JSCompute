@@ -1,8 +1,4 @@
-/**
- * Created by Taylor on 3/31/2014.
- */
+includeLibrary("Events.js");
+includeLibrary("sample.js");
 
-robot.forward();
-
-print("Is cool");
-print(3);
+print("Booted up");

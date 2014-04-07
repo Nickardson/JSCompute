@@ -40,7 +40,7 @@ public class JavaScriptEngine {
      * @return
      * The result of the evaluation.
      */
-    public static Object eval(ScriptableObject scope, String code) {
+    public static Object eval(Scriptable scope, String code) {
         return eval(scope, code, "<eval>");
     }
 
@@ -52,7 +52,7 @@ public class JavaScriptEngine {
      * @return
      * The result of the evaluation.
      */
-    public static Object eval(ScriptableObject scope, String code, String source) {
+    public static Object eval(Scriptable scope, String code, String source) {
         contextEnter();
         try {
             if (scope != null) {
@@ -71,7 +71,7 @@ public class JavaScriptEngine {
      * @param scope The global object.
      * @param path The fully qualified path to the file.
      */
-    public static void runResource(ScriptableObject scope, String path) {
+    public static void runResource(Scriptable scope, String path) {
         runInputStream(scope, JavaScriptEngine.class.getResourceAsStream(path), "classpath://" + path);
     }
 
@@ -80,7 +80,7 @@ public class JavaScriptEngine {
      * @param scope The global object.
      * @param name The name of the library to run.
      */
-    public static void runLibrary(ScriptableObject scope, String name) {
+    public static void runLibrary(Scriptable scope, String name) {
         runResource(scope, "/com/nickardson/jscomputing/js/" + name);
     }
 
@@ -89,7 +89,7 @@ public class JavaScriptEngine {
      * @param scope The global object.
      * @param stream The stream.
      */
-    public static void runInputStream(ScriptableObject scope, InputStream stream) {
+    public static void runInputStream(Scriptable scope, InputStream stream) {
         runInputStream(scope, stream, "<unknown>");
     }
 
@@ -99,7 +99,7 @@ public class JavaScriptEngine {
      * @param stream The stream.
      * @param source The name of the source where this code came from.
      */
-    public static void runInputStream(ScriptableObject scope, InputStream stream, String source) {
+    public static void runInputStream(Scriptable scope, InputStream stream, String source) {
         eval(scope, new Scanner(stream).useDelimiter("\\Z").next(), source);
     }
 
@@ -108,7 +108,7 @@ public class JavaScriptEngine {
      * @param scope The global object.
      * @param file The file to run.
      */
-    public static void runFile(ScriptableObject scope, File file) {
+    public static void runFile(Scriptable scope, File file) {
         try {
             eval(scope, new Scanner(file).useDelimiter("\\Z").next(), file.getPath());
         } catch (FileNotFoundException ex) {
@@ -121,7 +121,7 @@ public class JavaScriptEngine {
      * @param scope The global object.
      * @param file The file to run.
      */
-    public static void runFile(ScriptableObject scope, String file) {
+    public static void runFile(Scriptable scope, String file) {
         runFile(scope, new File(file));
     }
 

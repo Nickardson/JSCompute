@@ -1,18 +1,19 @@
 package com.nickardson.jscomputing.common.computers;
 
-import com.nickardson.jscomputing.common.computers.events.ComputingEventJavaScriptEval;
-import com.nickardson.jscomputing.common.computers.events.ComputingEventShutDown;
-import com.nickardson.jscomputing.common.computers.events.IComputingEvent;
+import com.nickardson.jscomputing.common.computers.events.*;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketScreenUpdate;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionIncludeClasspath;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrintToScreen;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
 import net.minecraft.entity.player.EntityPlayerMP;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -21,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * A ServerJavaScriptComputer with a physical TileEntity, and a basic DOS interface.
  */
-public class ServerTerminalComputer extends AbstractTerminalComputer implements IServerComputer, IScriptableComputer {
+public class ServerTerminalComputer extends AbstractTerminalComputer implements IServerComputer, IScriptableComputer, IEventableComputer, IKeyboardableComputer {
     @Override
     public void updateLines(char[][] lines) {
         linesUpdated = true;
@@ -124,11 +125,13 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         scope.defineProperty("print", new APIFunctionPrintToScreen(this), ScriptableObject.READONLY);
         scope.defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.READONLY);
         scope.defineProperty("computer", new APIComputer(tileEntity), ScriptableObject.READONLY);
+        scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/com/nickardson/jscomputing/js/"), ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 JavaScriptEngine.contextEnter();
+                JavaScriptEngine.runLibrary(scope, "main.js");
                 while (true) {
                     try {
                         IComputingEvent event = queue.take();
@@ -178,4 +181,28 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         return queue;
     }
 
+    @Override
+    public void onKey(int key, char character, boolean state) {
+        triggerEvent(new ComputingEventEvent("key", key, character, state));
+    }
+
+    @Override
+    public void onEvent(String name, Object[] args) {
+        Object events = get("events");
+        if (events instanceof ScriptableObject) {
+            Object trigger = ((ScriptableObject) events).get("trigger");
+            if (trigger instanceof Function) {
+                try {
+                    Object[] functionArgs = new Object[args.length + 1];
+                    functionArgs[0] = name;
+                    for (int i = 0; i < args.length; i++) {
+                        functionArgs[i + 1] = args[i];
+                    }
+                    ((Function) trigger).call(JavaScriptEngine.getContext(), getScope(), (Scriptable) events, functionArgs);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

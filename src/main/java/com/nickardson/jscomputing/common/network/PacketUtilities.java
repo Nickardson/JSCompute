@@ -1,6 +1,9 @@
 package com.nickardson.jscomputing.common.network;
 
+import com.nickardson.jscomputing.common.computers.IServerComputer;
+import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 
 import java.io.UnsupportedEncodingException;
 
@@ -21,4 +24,18 @@ public class PacketUtilities {
         }
     }
 
+    /**
+     * Gets the Server-side computer the given player has open.
+     * @param player The player to check.
+     * @return The Server computer the player has open, or null if none.
+     */
+    public static IServerComputer getOpenComputer(EntityPlayer player) {
+        if (player.openContainer instanceof ContainerTerminalComputer) {
+            ContainerTerminalComputer containerTerminalComputer = (ContainerTerminalComputer) player.openContainer;
+
+            IServerComputer c = (IServerComputer) containerTerminalComputer.getComputer();
+            return c;
+        }
+        return null;
+    }
 }
