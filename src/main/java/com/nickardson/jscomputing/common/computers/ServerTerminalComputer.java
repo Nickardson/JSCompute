@@ -7,6 +7,7 @@ import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketScreenUpdate;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
+import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrintToScreen;

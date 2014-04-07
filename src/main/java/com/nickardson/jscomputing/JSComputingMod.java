@@ -6,7 +6,6 @@ import com.nickardson.jscomputing.common.blocks.BlockComputer;
 import com.nickardson.jscomputing.common.items.ItemComputerReader;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
-import com.nickardson.jscomputing.common.computers.JavaScriptEngine;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -101,8 +100,6 @@ public class JSComputingMod
 
         Items.computerReader = new ItemComputerReader();
         Items.register(Items.computerReader);
-
-        JavaScriptEngine.setup();
 
         GameRegistry.registerTileEntity(TileEntityTerminalComputer.class, TileEntityTerminalComputer.NAME);
 

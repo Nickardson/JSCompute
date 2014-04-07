@@ -153,7 +153,7 @@ public class ComputerManager {
     /**
      * The initial ID of created computers.
      */
-    private static int ID = 1337;
+    private static int ID = 1;
 
     /**
      * Gets the next available ID for a new computer.
