@@ -50,7 +50,7 @@ public abstract class AbstractTerminalComputer extends AbstractComputer implemen
 
     @Override
     public void setCursor(int x, int y) {
-        this.cursorY = Math.min(Math.max(x, 0), getWidth() - 1);
+        this.cursorX = Math.min(Math.max(x, 0), getWidth() - 1);
         this.cursorY = Math.min(Math.max(y, 0), getHeight() - 1);
     }
 }

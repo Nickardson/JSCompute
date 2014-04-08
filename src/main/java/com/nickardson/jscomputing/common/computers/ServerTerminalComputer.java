@@ -7,9 +7,9 @@ import com.nickardson.jscomputing.common.network.PacketScreenUpdate;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
+import com.nickardson.jscomputing.javascript.api.APIScreen;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionIncludeClasspath;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionPrintToScreen;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.mozilla.javascript.Function;
@@ -122,16 +122,16 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     @Override
     public void start() {
         scope.defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
-        scope.defineProperty("print", new APIFunctionPrintToScreen(this), ScriptableObject.READONLY);
         scope.defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.READONLY);
         scope.defineProperty("computer", new APIComputer(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/com/nickardson/jscomputing/js/"), ScriptableObject.READONLY);
+        scope.defineProperty("screen", new APIScreen(this), ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 JavaScriptEngine.contextEnter();
-                JavaScriptEngine.runLibrary(scope, "main.js");
+                JavaScriptEngine.runLibrary(scope, "os.js");
                 while (true) {
                     try {
                         IComputingEvent event = queue.take();
