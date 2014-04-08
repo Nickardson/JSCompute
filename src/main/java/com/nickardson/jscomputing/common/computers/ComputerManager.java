@@ -125,14 +125,12 @@ public class ComputerManager {
 
         ComputerManager.removeComputer(oldID);
 
-        oldID = newID;
-
         if (client != null) {
-            client.setID(oldID);
+            client.setID(newID);
             ComputerManager.addClientComputer(client);
         }
         if (server != null) {
-            server.setID(oldID);
+            server.setID(newID);
             ComputerManager.addServerComputer(server);
         }
     }

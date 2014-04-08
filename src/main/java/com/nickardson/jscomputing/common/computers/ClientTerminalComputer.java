@@ -14,7 +14,7 @@ public class ClientTerminalComputer extends AbstractTerminalComputer implements 
 
     @Override
     public int getID() {
-        return entity.getComputerID();
+        return super.getID();
     }
 
     @Override

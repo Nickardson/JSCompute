@@ -102,12 +102,11 @@ public class BlockComputer extends AbstractBlockContainer {
                 turnOn(entity);
             }
 
-            if (entity.getServerComputer() != null) {
-                player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINAL_COMPUTER, world, x, y, z);
+            player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINAL_COMPUTER, world, x, y, z);
 
-                if (!world.isRemote && entity.getServerComputer() != null) {
-                    entity.getServerComputer().onPlayerOpenGui();
-                }
+            IServerComputer serverComputer = entity.getServerComputer();
+            if (serverComputer != null && !world.isRemote) {
+                serverComputer.onPlayerOpenGui();
                 return true;
             }
         }
