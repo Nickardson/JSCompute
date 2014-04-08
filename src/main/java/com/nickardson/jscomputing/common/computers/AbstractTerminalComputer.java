@@ -5,9 +5,9 @@ package com.nickardson.jscomputing.common.computers;
  */
 public abstract class AbstractTerminalComputer extends AbstractComputer implements IScreenedComputer {
     public static int TERMINAL_WIDTH = 50;
-    public static int TERMINAL_HEIGHT = 25;
+    public static int TERMINAL_HEIGHT = 20;
 
-    char[][] lines;
+    byte[][] lines;
 
     int cursorX = 0;
     int cursorY = 0;
@@ -15,16 +15,16 @@ public abstract class AbstractTerminalComputer extends AbstractComputer implemen
     public AbstractTerminalComputer(int id) {
         super(id);
 
-        lines = new char[getHeight()][getWidth()];
+        lines = new byte[getHeight()][getWidth()];
     }
 
     @Override
-    public char[][] getLines() {
+    public byte[][] getLines() {
         return lines;
     }
 
     @Override
-    public void setLines(char[][] lines) {
+    public void setLines(byte[][] lines) {
         this.lines = lines;
     }
 

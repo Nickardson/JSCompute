@@ -18,7 +18,7 @@ public class UnicodeFontRenderer {
         font.getEffects().add(new ColorEffect(Color.white));
         font.getEffects().addAll(Arrays.asList(effects));
 
-        font.addAsciiGlyphs();
+        font.addGlyphs(0, 255);
 
         try {
             font.loadGlyphs();

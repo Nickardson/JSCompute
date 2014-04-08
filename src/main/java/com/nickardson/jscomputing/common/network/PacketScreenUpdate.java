@@ -13,7 +13,7 @@ public class PacketScreenUpdate extends PacketCharArray {
     public PacketScreenUpdate() {
     }
 
-    public PacketScreenUpdate(int id, char[][] array) {
+    public PacketScreenUpdate(int id, byte[][] array) {
         super(array);
         this.id = id;
     }
@@ -40,7 +40,7 @@ public class PacketScreenUpdate extends PacketCharArray {
             IComputer computer = container.getComputer();
             if (computer instanceof IScreenedComputer) {
                 if (computer.getID() == id) {
-                    ((IScreenedComputer) computer).setLines(array);
+                    ((IScreenedComputer) computer).updateLines(array);
                 }
             }
         }

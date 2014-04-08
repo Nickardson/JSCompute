@@ -37,9 +37,21 @@ public class ClientTerminalComputer extends AbstractTerminalComputer implements 
 
     }
 
-    @Override
-    public void updateLines(char[][] lines) {
+    private boolean linesUpdated = false;
 
+    @Override
+    public void updateLines(byte[][] lines) {
+        linesUpdated = true;
+        setLines(lines);
+    }
+
+    public boolean pollUpdated() {
+        if (linesUpdated) {
+            linesUpdated = false;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

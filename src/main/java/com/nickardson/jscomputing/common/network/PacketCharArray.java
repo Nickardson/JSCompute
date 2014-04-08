@@ -7,12 +7,12 @@ public abstract class PacketCharArray implements IPacket {
     int width = 0;
     int height = 0;
 
-    char[][] array;
+    byte[][] array;
 
     public PacketCharArray() {
     }
 
-    public PacketCharArray(char[][] array) {
+    public PacketCharArray(byte[][] array) {
         this.array = array;
         this.width = array[0].length;
         this.height = array.length;
@@ -26,7 +26,7 @@ public abstract class PacketCharArray implements IPacket {
         return height;
     }
 
-    public char[][] getArray() {
+    public byte[][] getArray() {
         return array;
     }
 
@@ -35,11 +35,11 @@ public abstract class PacketCharArray implements IPacket {
         width = bytes.readByte();
         height = bytes.readByte();
 
-        array = new char[height][width];
+        array = new byte[height][width];
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                array[y][x] = bytes.readChar();
+                array[y][x] = bytes.readByte();
             }
         }
     }
@@ -54,7 +54,7 @@ public abstract class PacketCharArray implements IPacket {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                bytes.writeChar(array[y][x]);
+                bytes.writeByte(array[y][x]);
             }
         }
     }

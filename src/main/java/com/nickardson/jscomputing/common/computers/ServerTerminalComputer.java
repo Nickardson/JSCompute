@@ -24,7 +24,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class ServerTerminalComputer extends AbstractTerminalComputer implements IServerComputer, IScriptableComputer, IEventableComputer, IKeyboardableComputer {
     @Override
-    public void updateLines(char[][] lines) {
+    public void updateLines(byte[][] lines) {
         linesUpdated = true;
         setLines(lines);
         sendLines();

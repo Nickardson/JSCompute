@@ -16,18 +16,18 @@ public class APIFunctionPrintToScreen extends JavaScriptFunction {
      * Shifts the lines in the given array up, such that index 0 now contains index 1.
      * @param lines
      */
-    private void shiftLinesUp(char[][] lines) {
+    private void shiftLinesUp(byte[][] lines) {
         for (int i = 1; i < lines.length; i++) {
             lines[i - 1] = lines[i];
         }
-        lines[lines.length - 1] = new char[lines[0].length];
+        lines[lines.length - 1] = new byte[lines[0].length];
     }
 
     /**
      * Shifts the lines in the given array down, such that index 1 now contains index 0.
      * @param lines
      */
-    private void shiftLinesDown(char[][] lines) {
+    private void shiftLinesDown(byte[][] lines) {
         for (int i = lines.length - 1; i > 0; i--) {
             lines[i] = lines[i - 1];
         }
@@ -39,7 +39,7 @@ public class APIFunctionPrintToScreen extends JavaScriptFunction {
             // Convert the argument to a string
             String result = (String) Context.jsToJava(args[0], String.class);
 
-            char[][] lines = computer.getLines();
+            byte[][] lines = computer.getLines();
 
             int x = computer.getCursorX(),
                 y = computer.getCursorY();
@@ -53,7 +53,7 @@ public class APIFunctionPrintToScreen extends JavaScriptFunction {
 
             // Write the string until we either reach the width, or run out of space.
             for (int i = 0; i < result.length() && x < computer.getWidth(); i++, x++) {
-                lines[y][x] = result.charAt(i);
+                lines[y][x] = (byte) result.charAt(i);
             }
             computer.updateLines(lines);
         }

@@ -52,6 +52,11 @@ public class GuiTerminalComputer extends GuiContainer {
      */
     private int screenHeight = 0;
 
+    /**
+     * The displayed lines.  The conversion from the stored computer data to a character array is somewhat inefficient, so updateLines should be called before rendering.
+     */
+    private char[][] lines;
+
     public GuiTerminalComputer(TileEntityTerminalComputer entityTerminalComputer) {
         super(new ContainerTerminalComputer(entityTerminalComputer));
 
@@ -70,6 +75,7 @@ public class GuiTerminalComputer extends GuiContainer {
         if (computer != null) {
             screenWidth = computer.getWidth();
             screenHeight = computer.getHeight();
+            lines = new char[screenHeight][screenWidth];
         }
     }
 
@@ -135,13 +141,27 @@ public class GuiTerminalComputer extends GuiContainer {
         ChannelHandler.sendToServer(new PacketComputerInput(text));
     }
 
+    private void updateLines() {
+        if (computer.pollUpdated()) {
+            byte[][] rawLines = computer.getLines();
+
+            for (int y = 0; y < screenHeight; y++) {
+                for (int x = 0; x < screenWidth; x++) {
+                    // Turn byte into unsigned byte, then cast to char.
+                    lines[y][x] = (char) (rawLines[y][x] & 0xFF);
+                }
+            }
+        }
+    }
+
     @Override
     protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
         RenderUtilities.prepare2D();
 
         int xPos = 10,
             yPos = 10;
-        char[][] lines = computer.getLines();
+
+        updateLines();
 
         glEnable(GL_TEXTURE_2D);
         for (int y = 0; y < screenHeight; y++) {

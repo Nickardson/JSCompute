@@ -8,20 +8,20 @@ public interface IScreenedComputer {
      * Sets the lines.
      * @param lines A two-dimensional char array containing the terminal text
      */
-    public void setLines(char[][] lines);
+    public void setLines(byte[][] lines);
 
     /**
      * Sets the lines, and triggers an update packet.
      * @param lines A two-dimensional char array containing the terminal text
      */
-    public void updateLines(char[][] lines);
+    public void updateLines(byte[][] lines);
 
     /**
      * Gets the lines.
      * @return
      * A two-dimensional char array containing the terminal text.
      */
-    public char[][] getLines();
+    public byte[][] getLines();
 
     /**
      * Update the terminal lines, ie send to the clients.
