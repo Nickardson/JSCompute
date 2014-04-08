@@ -4,6 +4,7 @@ import com.nickardson.jscomputing.common.computers.IServerComputer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PacketComputerInput extends PacketText {
+    @SuppressWarnings("UnusedDeclaration")
     public PacketComputerInput() {
     }
 

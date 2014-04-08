@@ -1,6 +1,5 @@
 package com.nickardson.jscomputing.common.network;
 
-import com.nickardson.jscomputing.common.computers.ComputerManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -8,6 +7,7 @@ public class PacketComputerOff implements IPacket {
 
     private int id;
 
+    @SuppressWarnings("UnusedDeclaration")
     public PacketComputerOff() {
     }
 

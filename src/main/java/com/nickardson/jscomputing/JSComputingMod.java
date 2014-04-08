@@ -91,6 +91,7 @@ public class JSComputingMod
         }
     }
 
+    @SuppressWarnings("UnusedParameters")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         instance = this;

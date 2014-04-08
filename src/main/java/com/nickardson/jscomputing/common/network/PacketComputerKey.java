@@ -11,6 +11,7 @@ public class PacketComputerKey implements IPacket {
     char character;
     boolean state;
 
+    @SuppressWarnings("UnusedDeclaration")
     public PacketComputerKey() {
     }
 

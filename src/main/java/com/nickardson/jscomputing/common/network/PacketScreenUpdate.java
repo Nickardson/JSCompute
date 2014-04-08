@@ -10,6 +10,7 @@ public class PacketScreenUpdate extends PacketCharArray {
 
     int id = 0;
 
+    @SuppressWarnings("UnusedDeclaration")
     public PacketScreenUpdate() {
     }
 

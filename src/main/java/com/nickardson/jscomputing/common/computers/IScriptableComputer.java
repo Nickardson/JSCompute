@@ -6,7 +6,7 @@ package com.nickardson.jscomputing.common.computers;
 public interface IScriptableComputer {
     /**
      * Evaluates code.
-     * @param code
+     * @param code The code to evaluate.
      */
     public void eval(String code);
 

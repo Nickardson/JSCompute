@@ -1,8 +1,6 @@
 package com.nickardson.jscomputing.common.network;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.util.CharsetUtil;
-import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class PacketText implements IPacket {
 

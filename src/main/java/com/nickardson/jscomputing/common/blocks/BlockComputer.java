@@ -134,7 +134,7 @@ public class BlockComputer extends AbstractBlockContainer {
             computer = new ServerTerminalComputer(nextID, entity);
             entity.update();
         } else {
-            computer = new ClientTerminalComputer(nextID, entity);
+            computer = new ClientTerminalComputer(entity);
             // TODO: Set computer id
         }
         entity.setComputerID(computer.getID());

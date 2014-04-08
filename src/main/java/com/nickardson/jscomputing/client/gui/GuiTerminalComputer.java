@@ -12,15 +12,15 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
-import java.io.IOException;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glEnable;
 
 public class GuiTerminalComputer extends GuiContainer {
     /**
      * The font to render terminal inputText in.
      */
-    private UnicodeFontRenderer font = null;
+    private static UnicodeFontRenderer font = null;
 
     /**
      * Whether keys are sent to the developer console.
@@ -31,11 +31,6 @@ public class GuiTerminalComputer extends GuiContainer {
      * Developer console field inputText.
      */
     private String inputText = "";
-
-    /**
-     * The TileEntity this GUI represents.
-     */
-    private TileEntityTerminalComputer terminalComputer;
 
     /**
      * The Computer object this GUI represents.
@@ -60,15 +55,9 @@ public class GuiTerminalComputer extends GuiContainer {
     public GuiTerminalComputer(TileEntityTerminalComputer entityTerminalComputer) {
         super(new ContainerTerminalComputer(entityTerminalComputer));
 
-        try {
-            this.font = new UnicodeFontRenderer(Font.createFont(Font.TRUETYPE_FONT, GuiTerminalComputer.class.getResourceAsStream("/assets/jscomputing/fonts/Inconsolata.ttf")).deriveFont(0, 20));
-        } catch (FontFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (font == null) {
+            font = UnicodeFontRenderer.fromInputStream(GuiTerminalComputer.class.getResourceAsStream("/assets/jscomputing/fonts/Inconsolata.ttf"), 20, Font.PLAIN);
         }
-
-        this.terminalComputer = entityTerminalComputer;
 
         this.computer = (ClientTerminalComputer) entityTerminalComputer.getClientComputer();
 

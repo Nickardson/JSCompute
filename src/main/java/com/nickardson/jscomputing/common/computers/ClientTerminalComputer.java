@@ -4,12 +4,8 @@ import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 
 public class ClientTerminalComputer extends AbstractTerminalComputer implements IClientComputer {
 
-    private TileEntityTerminalComputer entity;
-
-    public ClientTerminalComputer(int id, TileEntityTerminalComputer computer) {
+    public ClientTerminalComputer(TileEntityTerminalComputer computer) {
         super(computer.getComputerID());
-
-        this.entity = computer;
     }
 
     @Override

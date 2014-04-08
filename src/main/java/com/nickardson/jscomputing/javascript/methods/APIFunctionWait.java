@@ -10,10 +10,9 @@ public class APIFunctionWait extends JavaScriptFunction {
 
         try {
             Thread.sleep(millis);
-        } catch (InterruptedException e) {
-
-        } finally {
-            return millis;
+        } catch (InterruptedException ignored) {
         }
+
+        return millis;
     }
 }

@@ -5,6 +5,7 @@ import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.font.effects.Effect;
 
 import java.awt.*;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -146,7 +147,7 @@ public class UnicodeFontRenderer {
     // TODO: Allow colors ChatColors.hex
 
     public int getCharWidth(char c) {
-        return (int) getStringWidth(Character.toString(c));
+        return getStringWidth(Character.toString(c));
     }
 
     public int getStringWidth(String string) {
@@ -165,15 +166,16 @@ public class UnicodeFontRenderer {
         return font.getHeight(string);
     }
 
-    /*public static Font fromSource(InputStream source, String name, int size, int mods) {
-        String fontName = size + "pt " + name + " " + mods;
+    public static UnicodeFontRenderer fromInputStream(InputStream source, int size, int mods) {
         try {
-            var font = AWTFont.createFont(AWTFont.TRUETYPE_FONT, source);
-            Packages.java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
-            fonts.cache[fontName] = font.deriveFont(mods, size);
+            Font font = Font.createFont(Font.TRUETYPE_FONT, source);
+            return new UnicodeFontRenderer(font.deriveFont(mods, size));
         } catch (Exception ex) {
             return null;
         }
-        return fonts.cache[fontName];
-    }*/
+    }
+
+    public static UnicodeFontRenderer fromSystem(String name, int size, int mods) {
+        return new UnicodeFontRenderer(new Font(name, mods, size));
+    }
 }

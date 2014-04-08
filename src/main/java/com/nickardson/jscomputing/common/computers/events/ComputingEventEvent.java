@@ -8,6 +8,7 @@ public class ComputingEventEvent implements IComputingEvent {
     private String name;
     private Object[] args;
 
+    @SuppressWarnings("UnusedDeclaration")
     public ComputingEventEvent() {
     }
 

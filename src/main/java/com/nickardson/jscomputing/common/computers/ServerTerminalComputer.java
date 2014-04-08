@@ -174,13 +174,6 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     private BlockingQueue<IComputingEvent> queue;
 
-    /**
-     * The queue that manages incoming ComputingEvents
-     */
-    public BlockingQueue<IComputingEvent> getQueue() {
-        return queue;
-    }
-
     @Override
     public void onKey(int key, char character, boolean state) {
         triggerEvent(new ComputingEventEvent("key", key, character, state));
@@ -195,9 +188,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                 try {
                     Object[] functionArgs = new Object[args.length + 1];
                     functionArgs[0] = name;
-                    for (int i = 0; i < args.length; i++) {
-                        functionArgs[i + 1] = args[i];
-                    }
+                    System.arraycopy(args, 0, functionArgs, 1, args.length);
                     ((Function) trigger).call(JavaScriptEngine.getContext(), getScope(), (Scriptable) events, functionArgs);
                 } catch (Exception e) {
                     e.printStackTrace();

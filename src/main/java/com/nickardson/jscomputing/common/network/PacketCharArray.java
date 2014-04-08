@@ -1,7 +1,6 @@
 package com.nickardson.jscomputing.common.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 
 public abstract class PacketCharArray implements IPacket {
     int width = 0;

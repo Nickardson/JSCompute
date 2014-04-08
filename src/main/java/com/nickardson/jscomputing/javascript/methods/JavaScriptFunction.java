@@ -35,6 +35,7 @@ public abstract class JavaScriptFunction extends NativeFunction {
      * @param thisObj
      * "this" object, for example, (x) in print.call(x, y)
      * @param args
+     * The arguments given to the function.
      * @return
      * Return value of the function
      */

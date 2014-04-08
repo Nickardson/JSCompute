@@ -83,12 +83,12 @@ public enum CharacterCode {
     public CodeType getType() {
         return type;
     }
-    
+
     /**
      * Encase a string in a character code, finishing with a reset.
-     * @param str
-     * @param code
-     * @return 
+     * @param str The string to encase.
+     * @param code The code to start with.
+     * @return The colored string.
      */
     public static String encase(String str, CharacterCode code) {
         return code + str + CharacterCode.Reset;
@@ -115,7 +115,7 @@ public enum CharacterCode {
     /**
      * Turns a string into a CharacterCode.
      * @param str The string, 
-     * @return 
+     * @return The matching CharacterCode, or CharacterCode.None.
      */
     public static CharacterCode fromString(String str) {
         for (CharacterCode code : CharacterCode.values()) {
@@ -124,14 +124,6 @@ public enum CharacterCode {
         }
         
         return CharacterCode.None;
-    }
-    
-    public static String rgb(String hex) {
-        return CharacterCode.SECTION + "#" + hex;
-    }
-
-    public static String hex(String hex) {
-        return CharacterCode.SECTION + "#" + hex;
     }
 
     public enum CodeType {

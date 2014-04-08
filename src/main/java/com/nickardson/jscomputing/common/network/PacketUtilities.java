@@ -33,8 +33,7 @@ public class PacketUtilities {
         if (player.openContainer instanceof ContainerTerminalComputer) {
             ContainerTerminalComputer containerTerminalComputer = (ContainerTerminalComputer) player.openContainer;
 
-            IServerComputer c = (IServerComputer) containerTerminalComputer.getComputer();
-            return c;
+            return (IServerComputer) containerTerminalComputer.getComputer();
         }
         return null;
     }
