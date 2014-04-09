@@ -107,6 +107,9 @@ public class BlockComputer extends AbstractBlockContainer {
             IServerComputer serverComputer = entity.getServerComputer();
             if (serverComputer != null && !world.isRemote) {
                 serverComputer.onPlayerOpenGui();
+                if (serverComputer instanceof IScreenedComputer) {
+                    ((IScreenedComputer) serverComputer).sendLines(true);
+                }
                 return true;
             }
         }
