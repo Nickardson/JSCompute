@@ -7,11 +7,16 @@ import com.nickardson.jscomputing.common.network.PacketScreenUpdate;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
+import com.nickardson.jscomputing.javascript.api.APIEvent;
+import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionIncludeClasspath;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionYield;
 import net.minecraft.entity.player.EntityPlayerMP;
+import org.lwjgl.input.Keyboard;
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -23,11 +28,13 @@ import java.util.concurrent.BlockingQueue;
  * A ServerJavaScriptComputer with a physical TileEntity, and a basic DOS interface.
  */
 public class ServerTerminalComputer extends AbstractTerminalComputer implements IServerComputer, IScriptableComputer, IEventableComputer, IKeyboardableComputer {
+    private boolean shutdown = false;
+
     @Override
     public void updateLines(byte[][] lines) {
         linesUpdated = true;
         setLines(lines);
-        sendLines();
+        sendLines(false);
     }
 
     /**
@@ -46,8 +53,8 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     private boolean linesUpdated;
 
     @Override
-    public void sendLines() {
-        if (linesUpdated && lastLineSend >= LINE_SEND_TICK_INTERVAL) {
+    public void sendLines(boolean force) {
+        if (force || (linesUpdated && lastLineSend >= LINE_SEND_TICK_INTERVAL)) {
             linesUpdated = false;
             lastLineSend = 0;
 
@@ -78,7 +85,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     @Override
     public void tick() {
-        sendLines();
+        sendLines(false);
         lastLineSend++;
     }
 
@@ -90,7 +97,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     @Override
     public void onPlayerOpenGui() {
         lastLineSend = LINE_SEND_TICK_INTERVAL;
-        sendLines();
+        sendLines(false);
     }
 
     @Override
@@ -126,21 +133,19 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         scope.defineProperty("computer", new APIComputer(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/com/nickardson/jscomputing/js/"), ScriptableObject.READONLY);
         scope.defineProperty("screen", new APIScreen(this), ScriptableObject.READONLY);
+        scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
+        scope.defineProperty("file", new APIFile(this), ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 JavaScriptEngine.contextEnter();
                 JavaScriptEngine.runLibrary(scope, "os.js");
-                while (true) {
+                while (!shutdown) {
                     try {
                         IComputingEvent event = queue.take();
                         if (event != null) {
-                            event.handle(ServerTerminalComputer.this);
-
-                            if (event instanceof ComputingEventShutDown) {
-                                break;
-                            }
+                            handleEvent(event);
                         } else {
                             Thread.sleep(10);
                         }
@@ -160,6 +165,16 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         return queue.offer(event);
     }
 
+    public void handleEvent(IComputingEvent event) {
+        if (!(event instanceof CancellableComputingEvent) || !((CancellableComputingEvent) event).isCancelled()) {
+            event.handle(ServerTerminalComputer.this);
+        }
+
+        if (event instanceof ComputingEventShutDown) {
+            shutdown = true;
+        }
+    }
+
     private ScriptableObject scope;
 
     public ScriptableObject getScope() {
@@ -174,22 +189,37 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     private BlockingQueue<IComputingEvent> queue;
 
-    @Override
-    public void onKey(int key, char character, boolean state) {
-        triggerEvent(new ComputingEventEvent("key", key, character, state));
+    public BlockingQueue<IComputingEvent> getQueue() {
+        return queue;
     }
 
     @Override
-    public void onEvent(String name, Object[] args) {
+    public void onKey(int key, char character, boolean down) {
+        ComputingEventEvent event = new ComputingEventEvent("key");
+
+        event.put("id", key);
+        event.put("character", character);
+        event.put("down", down);
+        event.put("key", Keyboard.getKeyName(key));
+
+        triggerEvent(event);
+    }
+
+    @Override
+    public void onEvent(ComputingEventEvent event) {
         Object events = get("events");
         if (events instanceof ScriptableObject) {
             Object trigger = ((ScriptableObject) events).get("trigger");
             if (trigger instanceof Function) {
                 try {
-                    Object[] functionArgs = new Object[args.length + 1];
-                    functionArgs[0] = name;
-                    System.arraycopy(args, 0, functionArgs, 1, args.length);
-                    ((Function) trigger).call(JavaScriptEngine.getContext(), getScope(), (Scriptable) events, functionArgs);
+                    ((Function) trigger).call(
+                            JavaScriptEngine.getContext(),
+                            getScope(),
+                            (Scriptable) events,
+                            new Object[]{
+                                    event.getName(),
+                                    Context.javaToJS(new APIEvent(event), getScope())
+                            });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

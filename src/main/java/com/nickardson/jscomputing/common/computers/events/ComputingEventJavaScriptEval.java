@@ -4,7 +4,7 @@ import com.nickardson.jscomputing.common.computers.IServerComputer;
 import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
 import org.mozilla.javascript.Context;
 
-public class ComputingEventJavaScriptEval implements IComputingEvent {
+public class ComputingEventJavaScriptEval extends CancellableComputingEvent {
     private String code;
     private String source;
 

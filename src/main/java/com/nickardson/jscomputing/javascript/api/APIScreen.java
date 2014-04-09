@@ -23,6 +23,10 @@ public class APIScreen {
         public void setY(int y) {
             computer.setCursor(computer.getCursorX(), y);
         }
+
+        public void set(int x, int y) {
+            computer.setCursor(x, y);
+        }
     }
 
     private Cursor cursor;
@@ -197,5 +201,11 @@ public class APIScreen {
      */
     public void clear() {
         clear("");
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public boolean isPrintable(char c) {
+        Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+        return !Character.isISOControl(c) && block != null && block != Character.UnicodeBlock.SPECIALS;
     }
 }

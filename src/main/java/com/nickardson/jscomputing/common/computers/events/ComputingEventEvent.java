@@ -3,16 +3,23 @@ package com.nickardson.jscomputing.common.computers.events;
 import com.nickardson.jscomputing.common.computers.IEventableComputer;
 import com.nickardson.jscomputing.common.computers.IServerComputer;
 
-public class ComputingEventEvent implements IComputingEvent {
+import java.util.HashMap;
+import java.util.Map;
+
+public class ComputingEventEvent extends CancellableComputingEvent {
 
     private String name;
-    private Object[] args;
+    private Map<String, Object> args;
 
     @SuppressWarnings("UnusedDeclaration")
     public ComputingEventEvent() {
     }
 
-    public ComputingEventEvent(String name, Object... args) {
+    public ComputingEventEvent(String name) {
+        this(name, new HashMap<String, Object>());
+    }
+
+    public ComputingEventEvent(String name, Map<String, Object> args) {
         this.name = name;
         this.args = args;
     }
@@ -20,7 +27,27 @@ public class ComputingEventEvent implements IComputingEvent {
     @Override
     public void handle(IServerComputer computer) {
         if (computer instanceof IEventableComputer) {
-            ((IEventableComputer) computer).onEvent(name, args);
+            ((IEventableComputer) computer).onEvent(this);
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Object get(String key) {
+        if (args.containsKey(key)) {
+            return args.get(key);
+        } else {
+            return null;
+        }
+    }
+
+    public void put(String key, Object value) {
+        args.put(key, value);
+    }
+
+    public Map<String, Object> getArgs() {
+        return args;
     }
 }

@@ -51,7 +51,7 @@ public class ClientTerminalComputer extends AbstractTerminalComputer implements 
     }
 
     @Override
-    public void sendLines() {
+    public void sendLines(boolean force) {
 
     }
 }

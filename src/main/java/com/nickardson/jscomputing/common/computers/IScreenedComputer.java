@@ -25,8 +25,9 @@ public interface IScreenedComputer {
 
     /**
      * Update the terminal lines, ie send to the clients.
+     * @param force Whether to force the lines to be sent, regardless of lag-reduction or other situations.
      */
-    public void sendLines();
+    public void sendLines(boolean force);
 
     /**
      * Provides the width of the terminal

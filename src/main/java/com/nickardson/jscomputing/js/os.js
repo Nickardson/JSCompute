@@ -1,30 +1,12 @@
 includeLibrary("Events.js");
-
-/**
- * Wraps a string to the given length.
- * @param width The maximum width of the wrapped text.
- * @param newline (Optional) The separator between wrapped lines.  Defaults to newline.
- * @returns {String} The wrapped string.
- */
-String.prototype.wrap = function (width, newline) {
-    newline = newline || "\n";
-    if (this.length > width) {
-        var i = width;
-        for (; i > 0 && this[i] != ' '; i--) {}
-        if (i > 0) {
-            var left = this.substring(0, i);
-            var right = this.substring(i + 1);
-            return left + newline + String.prototype.wrap.call(right, width, newline);
-        }
-    }
-    return this;
-};
+includeLibrary("stringutils.js");
 
 /**
  * Prints the given argument, with text wrapping.
  * @param arg The object to print out.
  */
 var print = function (arg) {
+    // Split up the wrapped text by newlines, then print each on a new line.
     var split = (arg + "").wrap(screen.width).split("\n");
     for (var i = 0; i < split.length; i++) {
         screen.print(split[i]);
@@ -37,6 +19,85 @@ var print = function (arg) {
  */
 var write = function (arg) {
     screen.write(arg);
+};
+
+/**
+ * Reads input from the terminal, suspending all execution while running.
+ * @param {String} [prefix] The prefix to the prompt.
+ * @param {Function} [filter] A function who takes the display string as it's argument, and should return a modified string.
+ * @returns {String} The input provided by the user.
+ * @example
+ * prompt();
+ *
+ * prompt("What's your name? ");
+ *
+ * // Regex to replace all occurrences (denoted by //g) of any character (denoted by .), with an asterisk.
+ * prompt("Password:", function (s) {
+ *     return s.replace(/./g, "*")
+ * });
+ */
+var prompt = function (prefix, filter) {
+    prefix = prefix || "";
+
+    var result = "",
+        x = screen.cursor.x,
+        y = screen.cursor.y;
+    while (true) {
+        // Reset cursor to the start.
+        screen.cursor.set(x, y);
+
+        var displayed = prefix + "> " + result;
+
+        // Apply a filter, if any exists.
+        if (filter != null) {
+            displayed = filter(displayed);
+        }
+
+        // The spare whitespace left over.
+        var spare = screen.width - displayed.length + 1;
+        // Uses concatenation on an empty array to create whitespace.
+        var whitespace = spare > 0 ? new Array(spare).join(" ") : "";
+
+        // Fit the text by chopping off anything too far to the left, and fill the blank area.
+        displayed = displayed.substr(Math.max(0, displayed.length - screen.width)) + whitespace;
+
+        screen.write(displayed);
+
+        // Wait for an event.
+        var event = events.pull("key");
+        // If the character is printable, add it to the input.
+        if (screen.isPrintable(event.character)) {
+            result += event.character;
+        } else {
+            if (event.key == "BACK" && result.length > 0) {
+                // Backspace.
+                result = result.substr(0, result.length - 1);
+            }
+        }
+
+        // Enter breaks out of the input loop, and we can return our input.
+        if (event.key == "RETURN") {
+            print();
+            return result;
+        }
+    }
+};
+
+events.pull = function (filter) {
+    if (typeof filter == "string") {
+        var name = filter;
+        filter = function (event) {
+            return event.name == name;
+        }
+    }
+
+    var event;
+    while (true) {
+        event = pull();
+        if (filter(event)) {
+            return event;
+        }
+    }
 };
 
 includeLibrary("main.js");
