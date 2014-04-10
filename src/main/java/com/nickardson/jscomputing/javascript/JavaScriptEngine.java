@@ -178,4 +178,14 @@ public class JavaScriptEngine {
         Context.exit();
         return scope;
     }
+
+    /**
+     * Converts the given object into a sandbox-friendly native JavaScript object.
+     * @param o The object to convert.
+     * @param scope The scope.
+     * @return The converted object.
+     */
+    public static Scriptable convert(Object o, Scriptable scope) {
+        return ScriptRuntime.toObject(scope, o);
+    }
 }

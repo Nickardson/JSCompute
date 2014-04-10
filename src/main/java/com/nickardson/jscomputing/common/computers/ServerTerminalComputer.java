@@ -10,10 +10,7 @@ import com.nickardson.jscomputing.javascript.api.APIComputer;
 import com.nickardson.jscomputing.javascript.api.APIEvent;
 import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionIncludeClasspath;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
-import com.nickardson.jscomputing.javascript.methods.APIFunctionYield;
+import com.nickardson.jscomputing.javascript.methods.*;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.lwjgl.input.Keyboard;
 import org.mozilla.javascript.Context;
@@ -134,7 +131,8 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/com/nickardson/jscomputing/js/"), ScriptableObject.READONLY);
         scope.defineProperty("screen", new APIScreen(this), ScriptableObject.READONLY);
         scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
-        scope.defineProperty("file", new APIFile(this), ScriptableObject.READONLY);
+        final APIFile fs = new APIFile(this);
+        scope.defineProperty("fs", fs, ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {
             @Override
@@ -154,6 +152,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                     }
                 }
                 JavaScriptEngine.contextExit();
+                fs.closeAll();
             }
         });
         thread.start();
