@@ -1,103 +1,91 @@
-includeLibrary("Events.js");
-includeLibrary("stringutils.js");
+os = {
+    "commands": []
+};
 
-/**
- * Prints the given argument, with text wrapping.
- * @param arg The object to print out.
- */
-var print = function (arg) {
-    // Split up the wrapped text by newlines, then print each on a new line.
-    var split = (arg + "").wrap(screen.width).split("\n");
-    for (var i = 0; i < split.length; i++) {
-        screen.print(split[i]);
+os.commands.push({
+    "name": "dir",
+    "help": "Gives a list of files in the current directory.",
+    "execute": function (args, directory) {
+        fs.dir(directory).forEach(print);
     }
-};
+});
 
-/**
- * Writes the given argument at the current cursor position.
- * @param arg The object to write out.
- */
-var write = function (arg) {
-    screen.write(arg);
-};
+os.commands.push({
+    "name": "echo",
+    "execute": function (args) {
+        print(args.join(" "));
+    }
+});
 
-/**
- * Reads input from the terminal, suspending all execution while running.
- * @param {String} [prefix] The prefix to the prompt.
- * @param {Function} [filter] A function who takes the display string as it's argument, and should return a modified string.
- * @returns {String} The input provided by the user.
- * @example
- * prompt();
- *
- * prompt("What's your name? ");
- *
- * // Regex to replace all occurrences (denoted by //g) of any character (denoted by .), with an asterisk.
- * prompt("Password:", function (s) {
- *     return s.replace(/./g, "*")
- * });
- */
-var prompt = function (prefix, filter) {
-    prefix = prefix || "";
+os.commands.push({
+    "name": "js",
+    "help": "Starts a JavaScript console.",
+    "execute": function () {
+        print("Run exit() to stop.");
 
-    var result = "",
-        x = screen.cursor.x,
-        y = screen.cursor.y;
-    while (true) {
-        // Reset cursor to the start.
-        screen.cursor.set(x, y);
-
-        var displayed = prefix + "> " + result;
-
-        // Apply a filter, if any exists.
-        if (filter != null) {
-            displayed = filter(displayed);
-        }
-
-        // The spare whitespace left over.
-        var spare = screen.width - displayed.length + 1;
-        // Uses concatenation on an empty array to create whitespace.
-        var whitespace = spare > 0 ? new Array(spare).join(" ") : "";
-
-        // Fit the text by chopping off anything too far to the left, and fill the blank area.
-        displayed = displayed.substr(Math.max(0, displayed.length - screen.width)) + whitespace;
-
-        screen.write(displayed);
-
-        // Wait for an event.
-        var event = events.pull("key");
-        // If the character is printable, add it to the input.
-        if (screen.isPrintable(event.character)) {
-            result += event.character;
-        } else {
-            if (event.key == "BACK" && result.length > 0) {
-                // Backspace.
-                result = result.substr(0, result.length - 1);
+        var running = true;
+        while (running) {
+            function exit() {
+                running = false;
             }
-        }
-
-        // Enter breaks out of the input loop, and we can return our input.
-        if (event.key == "RETURN") {
-            print();
-            return result;
+            eval(prompt("JS"));
         }
     }
-};
+});
 
-events.pull = function (filter) {
-    if (typeof filter == "string") {
-        var name = filter;
-        filter = function (event) {
-            return event.name == name;
+os.commands.push({
+    "name": "help",
+    "args": ["[command-name]"],
+    "help": "Displays this help message.",
+    "execute": function (args) {
+        if (args.length == 0) {
+            os.commands.map(function (command) {
+                return command.name;
+            }).forEach(print);
         }
     }
+});
 
-    var event;
-    while (true) {
-        event = pull();
-        if (filter(event)) {
-            return event;
+/**
+ * Gets the OS command with the given name.
+ * @param name The name of the command.
+ * @returns {*}
+ */
+function getCommand(name) {
+    for (var i = 0; i < os.commands.length; i++) {
+        var c = os.commands[i];
+        if (c.name == name) {
+            return c;
         }
     }
-};
+}
 
-includeLibrary("main.js");
+/**
+ * Gets the text that should be displayed in the prompt area.
+ * @param dir The directory.
+ */
+function getDirectoryText (dir) {
+    if (dir == ".") {
+        return "";
+    }
+    return dir;
+}
+
+var current = ".";
+
+print("Booted up.");
+
+//noinspection InfiniteLoopJS
+while (true) {
+    var input = prompt(getDirectoryText(current)),
+        split = input.split(" ");
+
+    var c = getCommand(split[0]);
+    if (c) {
+        try {
+            c.execute(split.slice(1), current);
+        } catch (ex) {
+            print("OS Error: " + ex);
+        }
+    }
+}

@@ -30,6 +30,30 @@ public class APIFile {
         }
     }
 
+    public boolean exists(String dir) {
+        File f = getComputerFile(dir);
+        if (f != null && f.exists()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDirectory(String dir) {
+        File f = getComputerFile(dir);
+        if (f != null && f.isDirectory()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFile(String dir) {
+        File f = getComputerFile(dir);
+        if (f != null && f.isFile()) {
+            return true;
+        }
+        return false;
+    }
+
     public Reading read(String dir) throws FileNotFoundException {
         return new Reading(this, getComputerFile(dir));
     }
@@ -115,6 +139,13 @@ public class APIFile {
             scanner.close();
         }
 
+        public Object readAll() {
+            scanner.useDelimiter("\\Z");
+            String result = scanner.next();
+            scanner.reset();
+            return JavaScriptEngine.convert(result, computer.getScope());
+        }
+
         public boolean hasNext() {
             return scanner.hasNext();
         }
@@ -147,84 +178,12 @@ public class APIFile {
             return scanner.nextBoolean();
         }
 
-        public boolean hasNextByte() {
-            return scanner.hasNextByte();
-        }
-
-        public byte nextByte() {
-            return scanner.nextByte();
-        }
-
-        public boolean hasNextShort() {
-            return scanner.hasNextShort();
-        }
-
-        public short nextShort() {
-            return scanner.nextShort();
-        }
-
-        public short nextShort(int radix) {
-            return scanner.nextShort(radix);
-        }
-
-        public boolean hasNextInt() {
-            return scanner.hasNextInt();
-        }
-
-        public int nextInt() {
-            return scanner.nextInt();
-        }
-
-        public boolean hasNextLong() {
-            return scanner.hasNextLong();
-        }
-
-        public long nextLong() {
-            return scanner.nextLong();
-        }
-
-        public double nextDouble() {
-            return scanner.nextDouble();
-        }
-
-        public boolean hasNextDouble() {
+        public boolean hasNextNumber() {
             return scanner.hasNextDouble();
         }
 
-        public float nextFloat() {
-            return scanner.nextFloat();
-        }
-
-        public boolean hasNextFloat() {
-            return scanner.hasNextFloat();
-        }
-
-        public long nextLong(int radix) {
-            return scanner.nextLong(radix);
-        }
-
-        public boolean hasNextLong(int radix) {
-            return scanner.hasNextLong(radix);
-        }
-
-        public int nextInt(int radix) {
-            return scanner.nextInt(radix);
-        }
-
-        public boolean hasNextInt(int radix) {
-            return scanner.hasNextInt(radix);
-        }
-
-        public boolean hasNextShort(int radix) {
-            return scanner.hasNextShort(radix);
-        }
-
-        public byte nextByte(int radix) {
-            return scanner.nextByte(radix);
-        }
-
-        public boolean hasNextByte(int radix) {
-            return scanner.hasNextByte(radix);
+        public double nextNumber() {
+            return scanner.nextDouble();
         }
     }
 
@@ -267,7 +226,7 @@ public class APIFile {
             writer.flush();
         }
 
-        public void printf(String format, Object... args) {
+        public void writef(String format, Object... args) {
             writer.printf(format, args);
         }
     }

@@ -18,6 +18,7 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -138,7 +139,18 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
             @Override
             public void run() {
                 JavaScriptEngine.contextEnter();
-                JavaScriptEngine.runLibrary(scope, "os.js");
+                JavaScriptEngine.runLibrary(scope, "system.js");
+                if (fs.exists("os.js")) {
+                    try {
+                        APIFile.Reading f = fs.read("os.js");
+                        eval((String) Context.jsToJava(f.readAll(), String.class));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    JavaScriptEngine.runLibrary(scope, "os.js");
+                }
+
                 while (!shutdown) {
                     try {
                         IComputingEvent event = queue.take();

@@ -13,7 +13,7 @@ public class APIScreen {
         }
 
         public void setX(int x) {
-            computer.setCursor(x, computer.getCursorY());
+            set(x, getY());
         }
 
         public int getY() {
@@ -21,7 +21,7 @@ public class APIScreen {
         }
 
         public void setY(int y) {
-            computer.setCursor(computer.getCursorX(), y);
+            set(getX(), y);
         }
 
         public void set(int x, int y) {
@@ -124,6 +124,8 @@ public class APIScreen {
         } else {
             shiftLinesDown(computer.getLines(), dir);
         }
+
+        cursor.setY(cursor.getY() + dir);
     }
 
     /**
