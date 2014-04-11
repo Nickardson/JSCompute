@@ -12,17 +12,18 @@ import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
 public class GuiTerminalComputer extends GuiContainer {
-    private static final int BACK_WIDTH = 560;
-    private static final int BACK_HEIGHT = 470;
-    private static final int TEXT_OFFSET_X = 28;
-    private static final int TEXT_OFFSET_Y = 22;
+    public static int BACK_WIDTH = 560;
+    public static int BACK_HEIGHT = 470;
+    public static int TEXT_OFFSET_X = 28;
+    public static int TEXT_OFFSET_Y = 22;
+    public static boolean USE_DISPLAY_LISTS = true;
 
     /**
      * The font to render terminal inputText in.
@@ -143,8 +144,8 @@ public class GuiTerminalComputer extends GuiContainer {
         ChannelHandler.sendToServer(new PacketComputerInput(text));
     }
 
-    private void updateLines() {
-        if (computer.pollUpdated()) {
+    private void updateLines(boolean force) {
+        if (force || computer.pollUpdated()) {
             byte[][] rawLines = computer.getLines();
 
             for (int y = 0; y < screenHeight; y++) {
@@ -153,6 +154,70 @@ public class GuiTerminalComputer extends GuiContainer {
                     lines[y][x] = (char) (rawLines[y][x] & 0xFF);
                 }
             }
+
+            if (USE_DISPLAY_LISTS) {
+                updateDisplayList();
+            }
+        }
+    }
+
+    int displayList = -1;
+
+    private void updateDisplayList() {
+        if (displayList != -1) {
+            glDeleteLists(displayList, 1);
+        }
+
+        // Bit of a hack to have Slick2D generate the display lists it needs offscreen.
+        glPushMatrix();
+        {
+            glTranslated(-100000, -100000, 0);
+            drawLines();
+        }
+        glPopMatrix();
+
+        displayList = glGenLists(1);
+        glNewList(displayList, GL_COMPILE);
+        {
+            drawLines();
+        }
+        glEndList();
+    }
+
+    private void drawLines() {
+        glEnable(GL_TEXTURE_2D);
+
+        mc.renderEngine.bindTexture(back);
+        RenderUtilities.drawBoundImage(0, 0, BACK_WIDTH, BACK_HEIGHT);
+
+        for (int y = 0; y < screenHeight; y++) {
+            font.drawString(new String(lines[y]), TEXT_OFFSET_X, (y * 20) + TEXT_OFFSET_Y, 0xFFFFFF);
+        }
+    }
+
+    private void draw() {
+        int xPos = (int) (RenderUtilities.getWidth() / 2.0 - BACK_WIDTH / 2.0),
+                yPos = (int) (RenderUtilities.getHeight() / 2.0 - BACK_HEIGHT / 2.0);
+
+        if (USE_DISPLAY_LISTS) {
+            if (displayList != -1) {
+                GL11.glPushMatrix();
+                {
+                    GL11.glTranslated(xPos, yPos, 0);
+                    glCallList(displayList);
+                }
+                GL11.glPopMatrix();
+            } else {
+                mc.renderEngine.bindTexture(back);
+                updateLines(true);
+            }
+        } else {
+            GL11.glPushMatrix();
+            {
+                GL11.glTranslated(xPos, yPos, 0);
+                drawLines();
+            }
+            GL11.glPopMatrix();
         }
     }
 
@@ -160,27 +225,8 @@ public class GuiTerminalComputer extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
         RenderUtilities.prepare2D();
 
-        int xPos = (int) (RenderUtilities.getWidth() / 2.0 - BACK_WIDTH / 2.0),
-            yPos = (int) (RenderUtilities.getHeight() / 2.0 - BACK_HEIGHT / 2.0);
-
-        updateLines();
-
-        glEnable(GL_TEXTURE_2D);
-
-        mc.renderEngine.bindTexture(back);
-        RenderUtilities.drawBoundImage(xPos, yPos, BACK_WIDTH, BACK_HEIGHT);
-
-        for (int y = 0; y < screenHeight; y++) {
-            String s = new String(lines[y]);
-
-            if (font != null) {
-                font.drawString(s, xPos + TEXT_OFFSET_X, yPos + TEXT_OFFSET_Y, 0xFFFFFF);
-            } else {
-                // Fallback to minecraft font renderer
-                fontRendererObj.drawString(s, xPos, yPos, 0xFFFFFF);
-            }
-            yPos += 20;
-        }
+        updateLines(false);
+        draw();
 
         if (devConsoleOpen) {
             fontRendererObj.drawString("> " + inputText, RenderUtilities.getWidth() / 2 - fontRendererObj.getStringWidth(inputText) / 2, RenderUtilities.getHeight() / 2 - fontRendererObj.FONT_HEIGHT / 2, 0xFFFFFF);
