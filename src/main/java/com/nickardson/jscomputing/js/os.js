@@ -1,19 +1,13 @@
 os = {
-    "commands": []
+    "commands": [],
+    "cwd": "."
 };
 
 os.commands.push({
     "name": "dir",
     "help": "Gives a list of files in the current directory.",
-    "execute": function (args, directory) {
-        fs.dir(directory).forEach(print);
-    }
-});
-
-os.commands.push({
-    "name": "echo",
-    "execute": function (args) {
-        print(args.join(" "));
+    "execute": function () {
+        fs.dir(os.cwd).forEach(print);
     }
 });
 
@@ -28,7 +22,15 @@ os.commands.push({
             function exit() {
                 running = false;
             }
-            eval(prompt("JS"));
+
+            try {
+                var result = eval(prompt("JS"));
+                if (result) {
+                    print(result);
+                }
+            } catch (e) {
+                print("Error: " + e);
+            }
         }
     }
 });
@@ -38,10 +40,23 @@ os.commands.push({
     "args": ["[command-name]"],
     "help": "Displays this help message.",
     "execute": function (args) {
+        // Display all commands
         if (args.length == 0) {
-            os.commands.map(function (command) {
-                return command.name;
+            os.commands.map(function (cmd) {
+                return cmd.name;
             }).forEach(print);
+        } else {
+            // Get information on the given command.
+            var cmd = getCommand(args[0]);
+
+            if (cmd) {
+                // Print the name and arguments, if any.
+                print(cmd.name + ": " + (cmd.args || []).join(" "));
+                // Print the help message, if any.
+                if (cmd.help) {
+                    print(" - " + cmd.help);
+                }
+            }
         }
     }
 });
@@ -54,7 +69,7 @@ os.commands.push({
 function getCommand(name) {
     for (var i = 0; i < os.commands.length; i++) {
         var c = os.commands[i];
-        if (c.name == name) {
+        if (c.name.toLowerCase() == name.toLowerCase()) {
             return c;
         }
     }
@@ -71,19 +86,17 @@ function getDirectoryText (dir) {
     return dir;
 }
 
-var current = ".";
-
 print("Booted up.");
 
 //noinspection InfiniteLoopJS
 while (true) {
-    var input = prompt(getDirectoryText(current)),
+    var input = prompt(getDirectoryText(os.cwd)),
         split = input.split(" ");
 
     var c = getCommand(split[0]);
     if (c) {
         try {
-            c.execute(split.slice(1), current);
+            c.execute(split.slice(1));
         } catch (ex) {
             print("OS Error: " + ex);
         }

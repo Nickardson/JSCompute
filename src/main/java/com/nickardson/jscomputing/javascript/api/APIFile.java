@@ -30,6 +30,20 @@ public class APIFile {
         }
     }
 
+    public Object combine(String file, String other) throws IOException {
+        File f = new File(getComputerFile(file), other);
+        String result = ".";
+        if (isSandboxed(f)) {
+            result = f.getCanonicalPath().substring(getComputerDirectory().getCanonicalPath().length());
+            if (result.length() > 0) {
+                result = result.replace('\\', '/');
+            } else {
+                result = "/";
+            }
+        }
+        return JavaScriptEngine.convert(result, computer.getScope());
+    }
+
     public boolean exists(String dir) {
         File f = getComputerFile(dir);
         if (f != null && f.exists()) {
@@ -91,7 +105,8 @@ public class APIFile {
      */
     private boolean isSandboxed(File file) {
         try {
-            return file.getCanonicalPath().startsWith(getComputerDirectory().getCanonicalPath());
+            File dir = getComputerDirectory();
+            return file.equals(dir) || file.getCanonicalPath().startsWith(dir.getCanonicalPath());
         } catch (IOException e) {
             return false;
         }
