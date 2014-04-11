@@ -5,14 +5,13 @@ import com.nickardson.jscomputing.common.computers.IClientComputer;
 import com.nickardson.jscomputing.common.computers.IServerComputer;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-import net.minecraftforge.event.world.WorldEvent;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 public class JSEventListener {
 
-    public Queue<Runnable> queuedActions = new ArrayDeque<Runnable>();
+    public Queue<Runnable> onNextTick = new ArrayDeque<Runnable>();
 
     @SubscribeEvent
     public void onTick(TickEvent event) {
@@ -25,15 +24,9 @@ public class JSEventListener {
                 computer.tick();
             }
 
-            Runnable run = queuedActions.poll();
-            if (run != null) {
-                run.run();
+            while (!onNextTick.isEmpty()) {
+                onNextTick.poll().run();
             }
         }
-    }
-
-    @SubscribeEvent
-    public void onWorldLoad(WorldEvent.Load event) {
-        System.out.println(ComputerManager.getWorldDirectory());
     }
 }

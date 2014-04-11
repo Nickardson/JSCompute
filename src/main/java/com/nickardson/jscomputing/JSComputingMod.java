@@ -26,7 +26,7 @@ import net.minecraft.item.Item;
 public class JSComputingMod
 {
     /**
-     * The
+     * The user-friendly identifier.
      */
     public static final String MOD_ID = "JSComputing";
 
@@ -68,6 +68,13 @@ public class JSComputingMod
         public static BlockComputer computer;
 
         /**
+         * Creates all blocks.
+         */
+        public static void init() {
+            Blocks.register(Blocks.computer = new BlockComputer());
+        }
+
+        /**
          * Register a block with Forge.
          * @param block The block to register.
          */
@@ -83,6 +90,13 @@ public class JSComputingMod
         public static ItemComputerReader computerReader;
 
         /**
+         * Creates all items.
+         */
+        public static void init() {
+            Items.register(Items.computerReader = new ItemComputerReader());
+        }
+
+        /**
          * Register an item with Forge.
          * @param item The item to register.
          */
@@ -91,18 +105,21 @@ public class JSComputingMod
         }
     }
 
+    /**
+     * Registers all TileEntities.
+     */
+    public void initTileEntities() {
+        GameRegistry.registerTileEntity(TileEntityTerminalComputer.class, TileEntityTerminalComputer.NAME);
+    }
+
     @SuppressWarnings("UnusedParameters")
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         instance = this;
 
-        Blocks.computer = new BlockComputer();
-        Blocks.register(Blocks.computer);
-
-        Items.computerReader = new ItemComputerReader();
-        Items.register(Items.computerReader);
-
-        GameRegistry.registerTileEntity(TileEntityTerminalComputer.class, TileEntityTerminalComputer.NAME);
+        Blocks.init();
+        Items.init();
+        initTileEntities();
 
         ChannelHandler.init();
 

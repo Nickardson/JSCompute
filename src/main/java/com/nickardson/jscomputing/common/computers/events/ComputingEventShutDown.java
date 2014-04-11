@@ -24,7 +24,7 @@ public class ComputingEventShutDown implements IComputingEvent {
         JSComputingMod.Blocks.computer.turnOff(entity);
 
         final PacketComputerOff killPacket = new PacketComputerOff(computer.getID());
-        JSComputingMod.instance.eventListener.queuedActions.add(new Runnable() {
+        JSComputingMod.instance.eventListener.onNextTick.add(new Runnable() {
             @Override
             public void run() {
                 for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {

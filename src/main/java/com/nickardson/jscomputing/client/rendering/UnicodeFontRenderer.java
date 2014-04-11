@@ -32,7 +32,16 @@ public class UnicodeFontRenderer {
         this(awtFont, new Effect[0]);
     }
 
-    public int drawString(String text, int x, int y, int defaultColor, boolean shadow) {
+    /**
+     * Draws a string.
+     * @param text The text to draw.
+     * @param x X position
+     * @param y Y position
+     * @param defaultColor The hex color, ie 0xFF0000.
+     * @param shadow Whether to replace all colors with black.
+     * @return The width of the draw string.
+     */
+    public double drawString(String text, int x, int y, int defaultColor, boolean shadow) {
         if (text == null || text.isEmpty()) {
             return 0;
         }
@@ -123,49 +132,93 @@ public class UnicodeFontRenderer {
         if (text.startsWith(CharacterCode.SECTION)) {
             return (int) xOffset;
         } else {
-            return getStringWidth(text);
+            return getWidth(text);
         }
     }
 
-    public int drawString(String string, int x, int y, int color) {
+    /**
+     * Draws a string.
+     * @param string The text to draw.
+     * @param x X position
+     * @param y Y position
+     * @param color The hex color, ie 0xFF0000.
+     * @return The width of the draw string.
+     */
+    public double drawString(String string, int x, int y, int color) {
         return drawString(string, x, y, color, false);
     }
 
-    public int drawStringWithShadow(String string, int x, int y, int color) {
+    /**
+     * Draws a string.
+     * @param string The text to draw.
+     * @param x X position
+     * @param y Y position
+     * @param color The color.
+     * @return The width of the draw string.
+     */
+    public double drawString(String string, int x, int y, Color color) {
+      return drawString(string, x, y, color.getRGB());
+    }
+
+    /**
+     * Draws a string.
+     * @param string The text to draw.
+     * @param x X position
+     * @param y Y position
+     * @param color The color.
+     * @return The width of the draw string.
+     */
+    public double drawString(String string, int x, int y, CharacterCode color) {
+        return drawString(string, x, y, color.getColor());
+    }
+
+    /**
+     * Draws a string, with a black shadow behind it.
+     * @param string The text to draw.
+     * @param x X position
+     * @param y Y position
+     * @param color The color.
+     * @return The width of the draw string.
+     */
+    public double drawStringWithShadow(String string, int x, int y, int color) {
         drawString(string, (int) (x + (1 / RenderUtilities.SCALE)), (int) (y + (1 / RenderUtilities.SCALE)), color, true);
         return drawString(string, x, y, color, false);
     }
 
-    public int drawString(String string, int x, int y, Color color) {
-        return drawString(string, x, y, color.getRGB());
+    /**
+     * Gets the width of the given character.
+     * @param c The character to check the width of.
+     * @return The width of the character, in pixels.
+     */
+    public double getWidth(char c) {
+        return getWidth(Character.toString(c));
     }
 
-    public int drawString(String string, int x, int y, CharacterCode color) {
-        return drawString(string, x, y, color.getColor());
-    }
-
-    // TODO: Allow colors ChatColors.hex
-
-    public int getCharWidth(char c) {
-        return getStringWidth(Character.toString(c));
-    }
-
-    public int getStringWidth(String string) {
-        return (int) getWidth(string);
-    }
-
+    /**
+     * Gets the width of the given string.
+     * @param string The string to check the width of.
+     * @return The width of the string, in pixels.
+     */
     public double getWidth(String string) {
         return font.getWidth(CharacterCode.strip(string));
     }
 
-    public int getStringHeight(String string) {
-        return (int) getHeight(string);
-    }
-
+    /**
+     * Gets the height of the given string.
+     * @param string The string to check the height of.
+     * @return The height of the string, in pixels.
+     */
     public double getHeight(String string) {
         return font.getHeight(string);
     }
 
+    /**
+     * Loads a font from an inputstream.
+     * @param source The stream from which the font will be read
+     * @param size The size, in pixels of the font.
+     * @param mods The font's modifiers, i.e. Font.PLAIN.
+     * @return The FontRenderer.
+     */
     public static UnicodeFontRenderer fromInputStream(InputStream source, int size, int mods) {
         try {
             Font font = Font.createFont(Font.TRUETYPE_FONT, source);
@@ -175,6 +228,13 @@ public class UnicodeFontRenderer {
         }
     }
 
+    /**
+     * Loads a System font.
+     * @param name The name of the font.
+     * @param size The size, in pixels of the font.
+     * @param mods The font's modifiers, i.e. Font.PLAIN.
+     * @return The FontRenderer.
+     */
     public static UnicodeFontRenderer fromSystem(String name, int size, int mods) {
         return new UnicodeFontRenderer(new Font(name, mods, size));
     }

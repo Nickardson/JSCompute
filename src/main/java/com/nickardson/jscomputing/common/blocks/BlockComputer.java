@@ -52,6 +52,12 @@ public class BlockComputer extends AbstractBlockContainer {
         if (metadata >= 6) {
             metadata -= 6;
             on = true;
+        } else {
+            // We are in hand, or in inventory.
+            if (metadata == 0) {
+                metadata = 3;
+                on = true;
+            }
         }
 
         if (side == metadata) {
@@ -129,8 +135,8 @@ public class BlockComputer extends AbstractBlockContainer {
 
         IComputer computer;
 
-        int nextID = entity.getComputerID();
         if (!entity.getWorldObj().isRemote) {
+            int nextID = entity.getComputerID();
             if (nextID == -1) {
                 nextID = ComputerManager.getNextAvailableID();
             }
@@ -138,7 +144,6 @@ public class BlockComputer extends AbstractBlockContainer {
             entity.update();
         } else {
             computer = new ClientTerminalComputer(entity);
-            // TODO: Set computer id
         }
         entity.setComputerID(computer.getID());
         computer.start();
