@@ -143,7 +143,7 @@ public class APIScreen {
      */
     public void write(Object o) {
         // Convert the argument to a string
-        String result = (String) Context.jsToJava(o, String.class);
+        String result = ((String) Context.jsToJava(o, String.class)).replace("\n", "");
 
         byte[][] lines = computer.getLines();
 

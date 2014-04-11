@@ -4,6 +4,14 @@ os = {
 };
 
 os.commands.push({
+    "name": "cls",
+    "help": "Clears the console.",
+    "execute": function (args) {
+        screen.scroll(-screen.height + 1);
+    }
+});
+
+os.commands.push({
     "name": "cd",
     "help": "Changes the directory.",
     "execute": function (args) {
