@@ -1,5 +1,6 @@
 package com.nickardson.jscomputing.client.gui;
 
+import com.nickardson.jscomputing.JSComputingMod;
 import com.nickardson.jscomputing.client.rendering.RenderUtilities;
 import com.nickardson.jscomputing.client.rendering.UnicodeFontRenderer;
 import com.nickardson.jscomputing.common.computers.ClientTerminalComputer;
@@ -9,6 +10,7 @@ import com.nickardson.jscomputing.common.network.PacketComputerInput;
 import com.nickardson.jscomputing.common.network.PacketComputerKey;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -17,10 +19,17 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 public class GuiTerminalComputer extends GuiContainer {
+    private static final int BACK_WIDTH = 560;
+    private static final int BACK_HEIGHT = 470;
+    private static final int TEXT_OFFSET_X = 28;
+    private static final int TEXT_OFFSET_Y = 22;
+
     /**
      * The font to render terminal inputText in.
      */
     private static UnicodeFontRenderer font = null;
+
+    private static ResourceLocation back = null;
 
     /**
      * Whether keys are sent to the developer console.
@@ -57,6 +66,10 @@ public class GuiTerminalComputer extends GuiContainer {
 
         if (font == null) {
             font = UnicodeFontRenderer.fromInputStream(GuiTerminalComputer.class.getResourceAsStream("/assets/jscomputing/fonts/Inconsolata.ttf"), 20, Font.PLAIN);
+        }
+
+        if (back == null) {
+            back = new ResourceLocation(JSComputingMod.ASSET_ID, "textures/gui/terminal.png");
         }
 
         this.computer = (ClientTerminalComputer) entityTerminalComputer.getClientComputer();
@@ -147,17 +160,21 @@ public class GuiTerminalComputer extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
         RenderUtilities.prepare2D();
 
-        int xPos = 10,
-            yPos = 10;
+        int xPos = (int) (RenderUtilities.getWidth() / 2.0 - BACK_WIDTH / 2.0),
+            yPos = (int) (RenderUtilities.getHeight() / 2.0 - BACK_HEIGHT / 2.0);
 
         updateLines();
 
         glEnable(GL_TEXTURE_2D);
+
+        mc.renderEngine.bindTexture(back);
+        RenderUtilities.drawBoundImage(xPos, yPos, BACK_WIDTH, BACK_HEIGHT);
+
         for (int y = 0; y < screenHeight; y++) {
             String s = new String(lines[y]);
 
             if (font != null) {
-                font.drawString(s, xPos, yPos, 0xFFFFFF);
+                font.drawString(s, xPos + TEXT_OFFSET_X, yPos + TEXT_OFFSET_Y, 0xFFFFFF);
             } else {
                 // Fallback to minecraft font renderer
                 fontRendererObj.drawString(s, xPos, yPos, 0xFFFFFF);
