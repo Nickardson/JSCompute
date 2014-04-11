@@ -1,13 +1,35 @@
 os = {
     "commands": [],
-    "cwd": "."
+    "cwd": "/"
 };
+
+os.commands.push({
+    "name": "cd",
+    "help": "Changes the directory.",
+    "execute": function (args) {
+        os.cwd = fs.combine(os.cwd, args[0]);
+    }
+});
+
+os.commands.push({
+    "name": "shutdown",
+    "help": "Turns the computer off.",
+    "execute": function () {
+        computer.off();
+    }
+});
 
 os.commands.push({
     "name": "dir",
     "help": "Gives a list of files in the current directory.",
     "execute": function () {
-        fs.dir(os.cwd).forEach(print);
+        fs.dir(os.cwd).map(function(path) {
+            if (fs.isFile(path)) {
+                return path;
+            } else {
+                return path + "/";
+            }
+        }).forEach(print);
     }
 });
 
@@ -80,8 +102,8 @@ function getCommand(name) {
  * @param dir The directory.
  */
 function getDirectoryText (dir) {
-    if (dir == ".") {
-        return "";
+    if ((dir.indexOf("/") == 0) || (dir.indexOf(".") == 0)) {
+        return dir.substr(1);
     }
     return dir;
 }
@@ -91,14 +113,22 @@ print("Booted up.");
 //noinspection InfiniteLoopJS
 while (true) {
     var input = prompt(getDirectoryText(os.cwd)),
-        split = input.split(" ");
+        args = input.split(" ");
 
-    var c = getCommand(split[0]);
+    // Try to get the command.
+    var c = getCommand(args[0]);
     if (c) {
         try {
-            c.execute(split.slice(1));
+            c.execute(args.slice(1));
         } catch (ex) {
             print("OS Error: " + ex);
+        }
+    } else {
+        // Try to run the file.
+        if (fs.exists(args[0])) {
+            (function () {
+                include(fs.combine(os.cwd, args[0]));
+            })();
         }
     }
 }

@@ -87,6 +87,25 @@ var prompt = function (prefix, filter) {
     }
 };
 
+var error = function (err) {
+    print("ERR: " + err);
+};
+
+var include = function (filename) {
+    var file = fs.read(filename);
+    if (file) {
+        var s = file.readAll();
+        file.close();
+        try {
+            eval(String(s));
+        } catch (e) {
+            error(String(e));
+        }
+    } else {
+        error("Couldn't read file!");
+    }
+};
+
 events.pull = function (filter) {
     if (typeof filter == "string") {
         var name = filter;

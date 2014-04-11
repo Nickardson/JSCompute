@@ -69,11 +69,25 @@ public class APIFile {
     }
 
     public Reading read(String dir) throws FileNotFoundException {
-        return new Reading(this, getComputerFile(dir));
+        File file = getComputerFile(dir);
+        if (file.exists() && file.isFile()) {
+            try {
+                return new Reading(this, file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     public Writing write(String dir) throws FileNotFoundException {
-        return new Writing(this, getComputerFile(dir));
+        File file = getComputerFile(dir);
+        try {
+            return new Writing(this, file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Object dir(String dir) {
@@ -106,7 +120,7 @@ public class APIFile {
     private boolean isSandboxed(File file) {
         try {
             File dir = getComputerDirectory();
-            return file.equals(dir) || file.getCanonicalPath().startsWith(dir.getCanonicalPath());
+            return file.exists() && (file.equals(dir) || file.getCanonicalPath().startsWith(dir.getCanonicalPath()));
         } catch (IOException e) {
             return false;
         }
