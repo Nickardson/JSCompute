@@ -77,7 +77,7 @@ os.commands.push({
             }).forEach(print);
         } else {
             // Get information on the given command.
-            var cmd = getCommand(args[0]);
+            var cmd = os.getCommand(args[0]);
 
             if (cmd) {
                 // Print the name and arguments, if any.
@@ -96,7 +96,7 @@ os.commands.push({
  * @param name The name of the command.
  * @returns {*}
  */
-function getCommand(name) {
+os.getCommand = function (name) {
     for (var i = 0; i < os.commands.length; i++) {
         var c = os.commands[i];
         if (c.name.toLowerCase() == name.toLowerCase()) {
@@ -109,7 +109,7 @@ function getCommand(name) {
  * Gets the text that should be displayed in the prompt area.
  * @param dir The directory.
  */
-function getDirectoryText (dir) {
+os.getDirectoryText = function (dir) {
     if ((dir.indexOf("/") == 0) || (dir.indexOf(".") == 0)) {
         return dir.substr(1);
     }
@@ -120,23 +120,21 @@ print("Booted up.");
 
 //noinspection InfiniteLoopJS
 while (true) {
-    var input = prompt(getDirectoryText(os.cwd)),
-        args = input.split(" ");
+    var _input = prompt(os.getDirectoryText(os.cwd)),
+        _args = _input.split(" ");
 
     // Try to get the command.
-    var c = getCommand(args[0]);
-    if (c) {
+    var _command = os.getCommand(_args[0]);
+    if (_command) {
         try {
-            c.execute(args.slice(1));
+            _command.execute(_args.slice(1));
         } catch (ex) {
             print("OS Error: " + ex);
         }
     } else {
         // Try to run the file.
-        if (fs.exists(args[0])) {
-            (function () {
-                include(fs.combine(os.cwd, args[0]));
-            })();
+        if (fs.exists(_args[0]) && fs.isFile(_args[0])) {
+            run(fs.combine(os.cwd, _args[0]), _args.slice(1));
         }
     }
 }

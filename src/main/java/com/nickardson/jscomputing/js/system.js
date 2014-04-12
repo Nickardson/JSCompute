@@ -1,3 +1,10 @@
+delete Packages;
+delete importClass;
+delete importPackage;
+delete java;
+delete com;
+delete net;
+
 includeLibrary("Events.js");
 includeLibrary("stringutils.js");
 
@@ -92,6 +99,22 @@ var error = function (err) {
 };
 
 var include = function (filename) {
+    var file = fs.read(filename);
+    if (file) {
+        var s = file.readAll();
+        file.close();
+        try {
+            eval(String(s));
+        } catch (e) {
+            error(String(e));
+        }
+    } else {
+        error("Couldn't read file!");
+    }
+};
+
+//noinspection JSUnusedLocalSymbols
+var run = function (filename, args) {
     var file = fs.read(filename);
     if (file) {
         var s = file.readAll();
