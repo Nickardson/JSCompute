@@ -25,7 +25,7 @@ public class APIFunctionIncludeClasspath extends JavaScriptFunction {
         }
 
         try {
-            JavaScriptEngine.runResource(scope, root + file);
+            JavaScriptEngine.runResource(thisObj, root + file);
         } catch (Exception e) {
             System.out.println("Could not load " + root + file);
         }

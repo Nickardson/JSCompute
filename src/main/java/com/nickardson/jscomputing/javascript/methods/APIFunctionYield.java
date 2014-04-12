@@ -7,8 +7,6 @@ import com.nickardson.jscomputing.javascript.api.APIEvent;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-import java.util.concurrent.BlockingQueue;
-
 public class APIFunctionYield extends JavaScriptFunction {
 
     private ServerTerminalComputer computer;
@@ -25,7 +23,7 @@ public class APIFunctionYield extends JavaScriptFunction {
 
                 if (event instanceof ComputingEventEvent) {
                     ComputingEventEvent e = (ComputingEventEvent) event;
-                    return new APIEvent(e);
+                    return APIEvent.create(e);
                 } else {
                     computer.handleEvent(event);
                 }

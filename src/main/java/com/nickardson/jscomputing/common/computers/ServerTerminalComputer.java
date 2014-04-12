@@ -10,6 +10,7 @@ import com.nickardson.jscomputing.javascript.api.APIComputer;
 import com.nickardson.jscomputing.javascript.api.APIEvent;
 import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
+import com.nickardson.jscomputing.javascript.api.fs.FileReadableJSAPI;
 import com.nickardson.jscomputing.javascript.methods.*;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.lwjgl.input.Keyboard;
@@ -128,11 +129,11 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     public void start() {
         scope.defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
         scope.defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.READONLY);
-        scope.defineProperty("computer", new APIComputer(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/com/nickardson/jscomputing/js/"), ScriptableObject.READONLY);
-        scope.defineProperty("screen", new APIScreen(this), ScriptableObject.READONLY);
         scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
-        final APIFile fs = new APIFile(this);
+        scope.defineProperty("computer", APIComputer.create(tileEntity), ScriptableObject.READONLY);
+        scope.defineProperty("screen", APIScreen.create(this), ScriptableObject.READONLY);
+        final APIFile.FileJSAPI fs = APIFile.create(this);
         scope.defineProperty("fs", fs, ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {
@@ -140,15 +141,19 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
             public void run() {
                 JavaScriptEngine.contextEnter();
                 JavaScriptEngine.runLibrary(scope, "system.js");
-                if (fs.exists("os.js")) {
-                    try {
-                        APIFile.Reading f = fs.read("os.js");
-                        eval((String) Context.jsToJava(f.readAll(), String.class));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                try {
+                    if (fs.exists("os.js")) {
+                        try {
+                            FileReadableJSAPI f = fs.read("os.js");
+                            eval((String) Context.jsToJava(f.readAll(), String.class));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        JavaScriptEngine.runLibrary(scope, "os.js");
                     }
-                } else {
-                    JavaScriptEngine.runLibrary(scope, "os.js");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
 
                 while (!shutdown) {
@@ -229,7 +234,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                             (Scriptable) events,
                             new Object[]{
                                     event.getName(),
-                                    Context.javaToJS(new APIEvent(event), getScope())
+                                    Context.javaToJS(APIEvent.create(event), getScope())
                             });
                 } catch (Exception e) {
                     e.printStackTrace();

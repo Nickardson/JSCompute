@@ -26,6 +26,6 @@ public class SandboxClassShutter implements ClassShutter {
     public static boolean UNRESTRICTED = false;
 
     public boolean visibleToScripts(String fullClassName) {
-        return UNRESTRICTED || fullClassName.startsWith("com.nickardson.jscomputing.javascript.api");
+        return UNRESTRICTED || fullClassName.contains("JSAPI");
     }
 }
