@@ -37,7 +37,7 @@ public class MapFileStorage {
 
         @Override
         public boolean exists(String path) throws FileNotFoundException {
-            return urlMap.containsKey(APIFile.normalize(path).replaceAll("(^[\\\\/]*)|([\\\\/]*$)", ""));
+            return urlMap.containsKey(getFileKey(path));
         }
 
         @Override
@@ -47,31 +47,22 @@ public class MapFileStorage {
 
         @Override
         public boolean isFile(String path) throws FileNotFoundException {
-            return false;
+            return exists(path);
         }
 
         @Override
         public FileReadableJSAPI read(String path) throws FileNotFoundException {
-            return null;
-        }
-
-        @Override
-        public FileWritableJSAPI write(String path) throws FileNotFoundException {
-            return null;
-        }
-
-        @Override
-        public FileWritableJSAPI append(String path) {
-            return null;
+            try {
+                return new FileReadableJSAPI(computer, urlMap.get(getFileKey(path)).openStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
         public Object dir() {
             return dir(".");
-        }
-
-        private boolean contains(String dir, String path) throws URISyntaxException {
-            return new URI(dir).normalize().equals(new URI(path + "/..").normalize());
         }
 
         @Override
@@ -86,6 +77,32 @@ public class MapFileStorage {
                 }
             }
             return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls.toArray(), ls.size(), Object[].class));
+        }
+
+        @Override
+        public boolean isWritable() {
+            return false;
+        }
+
+        /**
+         * Gets the key for the given file.
+         * @param path The path to the file.
+         * @return The key for the file, in the file map.
+         */
+        private String getFileKey(String path) {
+            return removeEdgeSlash(APIFile.normalize(path));
+        }
+
+        private boolean contains(String dir, String path) throws URISyntaxException {
+            return new URI(dir).normalize().equals(new URI(path + "/..").normalize());
+        }
+
+        /**
+         * Removes preceding and trailing slashes from the given string.
+         * @param path The string.
+         */
+        private String removeEdgeSlash(String path) {
+            return path.replaceAll("(^[\\\\/]*)|([\\\\/]*$)", "");
         }
     }
 }

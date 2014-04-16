@@ -1,16 +1,13 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.List;
+import java.io.*;
 
 public class FileWritableJSAPI extends ComputerFile {
     PrintWriter writer;
 
-    public FileWritableJSAPI(List<ComputerFile> openFiles, File file) throws FileNotFoundException {
-        super(openFiles);
-        this.writer = new PrintWriter(file);
+    public FileWritableJSAPI(OutputStream stream) throws FileNotFoundException {
+        super();
+        this.writer = new PrintWriter(stream);
     }
 
     @Override
@@ -45,5 +42,5 @@ public class FileWritableJSAPI extends ComputerFile {
 
     public void writef(String format, Object... args) {
         writer.printf(format, args);
-    };
+    }
 }

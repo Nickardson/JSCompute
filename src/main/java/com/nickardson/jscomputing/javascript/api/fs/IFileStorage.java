@@ -14,11 +14,9 @@ public interface IFileStorage {
 
     FileReadableJSAPI read(String path) throws FileNotFoundException;
 
-    FileWritableJSAPI write(String path) throws FileNotFoundException;
-
-    FileWritableJSAPI append(String path);
-
     Object dir();
 
     Object dir(String path);
+
+    boolean isWritable();
 }

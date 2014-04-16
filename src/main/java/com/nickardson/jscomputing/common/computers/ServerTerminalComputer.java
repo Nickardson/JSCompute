@@ -8,8 +8,8 @@ import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
 import com.nickardson.jscomputing.javascript.api.APIEvent;
-import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
+import com.nickardson.jscomputing.javascript.api.fs.ComputerFileStorage;
 import com.nickardson.jscomputing.javascript.api.fs.FileReadableJSAPI;
 import com.nickardson.jscomputing.javascript.methods.*;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -133,7 +133,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
         scope.defineProperty("computer", APIComputer.create(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("screen", APIScreen.create(this), ScriptableObject.READONLY);
-        final APIFile.FileJSAPI fs = APIFile.create(this);
+        final ComputerFileStorage.ComputerFileStorageJSAPI fs = ComputerFileStorage.create(this);
         scope.defineProperty("fs", fs, ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {

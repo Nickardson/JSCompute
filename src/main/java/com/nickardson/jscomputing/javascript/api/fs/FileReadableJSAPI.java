@@ -5,7 +5,6 @@ import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Scanner;
 
 public class FileReadableJSAPI extends ComputerFile {
@@ -16,12 +15,11 @@ public class FileReadableJSAPI extends ComputerFile {
     /**
      * Creates an exposable readable file.
      * @param computer The computer whose scope is used to create.
-     * @param openFiles The list of open files.
      * @param stream The stream to read from.
      * @throws FileNotFoundException
      */
-    public FileReadableJSAPI(ServerTerminalComputer computer, List<ComputerFile> openFiles, InputStream stream) throws FileNotFoundException {
-        super(openFiles);
+    public FileReadableJSAPI(ServerTerminalComputer computer, InputStream stream) throws FileNotFoundException {
+        super();
         this.computer = computer;
         this.scanner = new Scanner(stream);
     }

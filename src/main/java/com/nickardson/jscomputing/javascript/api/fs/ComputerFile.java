@@ -1,16 +1,13 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
-import java.util.List;
+import com.nickardson.jscomputing.javascript.api.APIFile;
 
 public abstract class ComputerFile {
-    private List<ComputerFile> openFiles;
-
-    public ComputerFile(List<ComputerFile> openFiles) {
-        this.openFiles = openFiles;
-        openFiles.add(this);
+    public ComputerFile() {
+        APIFile.openFiles.add(this);
     }
 
     public void close() {
-        openFiles.remove(this);
+        APIFile.openFiles.remove(this);
     }
 }
