@@ -8,9 +8,9 @@ import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
 import com.nickardson.jscomputing.javascript.api.APIComputer;
 import com.nickardson.jscomputing.javascript.api.APIEvent;
+import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
-import com.nickardson.jscomputing.javascript.api.fs.ComputerFileStorage;
-import com.nickardson.jscomputing.javascript.api.fs.FileReadableJSAPI;
+import com.nickardson.jscomputing.javascript.api.fs.*;
 import com.nickardson.jscomputing.javascript.methods.*;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.lwjgl.input.Keyboard;
@@ -20,6 +20,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import java.io.FileNotFoundException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -133,7 +135,18 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
         scope.defineProperty("computer", APIComputer.create(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("screen", APIScreen.create(this), ScriptableObject.READONLY);
-        final ComputerFileStorage.ComputerFileStorageJSAPI fs = ComputerFileStorage.create(this);
+
+        ComputerFileStorage.ComputerFileStorageJSAPI computerFS = ComputerFileStorage.create(this);
+
+        MapFileStorage.MapFileStorageJSAPI filesOS = MapFileStorage.create(this, new HashMap<String, URL>() {{
+            put("edit", ServerTerminalComputer.class.getResource("/assets/jscomputing/js/edit.js"));
+        }}, false);
+
+        final WritableMultiFileStorage.WritableMultiFileStorageJSAPI fs = WritableMultiFileStorage.create(this, new IFileStorage[] {
+                filesOS,
+                computerFS
+        }, computerFS);
+
         scope.defineProperty("fs", fs, ScriptableObject.READONLY);
 
         thread = new Thread(new Runnable() {
@@ -169,7 +182,11 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                     }
                 }
                 JavaScriptEngine.contextExit();
-                fs.closeAll();
+
+                for (ComputerFile file : APIFile.openFiles) {
+                    file.close();
+                }
+                APIFile.openFiles.clear();
             }
         });
         thread.start();

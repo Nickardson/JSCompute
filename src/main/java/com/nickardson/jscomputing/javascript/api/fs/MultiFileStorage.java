@@ -2,6 +2,7 @@ package com.nickardson.jscomputing.javascript.api.fs;
 
 import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
+import com.nickardson.jscomputing.javascript.api.APIFile;
 import org.mozilla.javascript.NativeArray;
 
 import java.io.FileNotFoundException;
@@ -23,14 +24,14 @@ public class MultiFileStorage {
         private ServerTerminalComputer computer;
         private IFileStorage[] stores;
 
-        private MultiFileStorageJSAPI(ServerTerminalComputer computer, IFileStorage[] stores) {
+        MultiFileStorageJSAPI(ServerTerminalComputer computer, IFileStorage[] stores) {
             this.computer = computer;
             this.stores = stores;
         }
 
         @Override
         public Object combine(String a, String b) throws IOException {
-            return null;
+            return JavaScriptEngine.convert(APIFile.combine(a, b), computer.getScope());
         }
 
         @Override
@@ -83,7 +84,7 @@ public class MultiFileStorage {
             List<Object> ls = new ArrayList<Object>();
 
             for (IFileStorage store : stores) {
-                NativeArray array = (NativeArray) store.dir();
+                NativeArray array = (NativeArray) store.dir(path);
                 for (int i = 0; i < array.getLength(); i++) {
                     ls.add(array.get(i));
                 }

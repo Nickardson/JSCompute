@@ -15,7 +15,16 @@ os.commands.push({
     "name": "cd",
     "help": "Changes the directory.",
     "execute": function (args) {
-        os.cwd = fs.combine(os.cwd, args[0]);
+        var fullPath = fs.combine(os.cwd, args[0]);
+        if (fs.exists(fullPath)) {
+            if (fs.isDirectory(fullPath)) {
+                os.cwd = fullPath;
+            } else {
+                print("Path is not a directory.");
+            }
+        } else {
+            print("Cannot find the specified path");
+        }
     }
 });
 
@@ -32,9 +41,10 @@ os.commands.push({
     "help": "Gives a list of files in the current directory.",
     "execute": function () {
         fs.dir(os.cwd).map(function(path) {
-            if (fs.isFile(path)) {
+            var fullPath = fs.combine(os.cwd, path);
+            if (fs.isFile(fullPath)) {
                 return path;
-            } else {
+            } else if (fs.isDirectory(fullPath)) {
                 return path + "/";
             }
         }).forEach(print);

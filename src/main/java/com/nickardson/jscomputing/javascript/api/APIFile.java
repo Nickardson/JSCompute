@@ -22,7 +22,7 @@ public class APIFile {
 
     public static String combine(String file, String other) {
         try {
-            return new URI(file + "/" + other).normalize().getPath();
+            return new URI(file + "/./" + other).normalize().getPath();
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;

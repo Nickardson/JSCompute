@@ -115,18 +115,19 @@ var include = function (filename) {
 
 //noinspection JSUnusedLocalSymbols
 var run = function (filename, args) {
-    var file = fs.read(filename);
-    if (file) {
-        var s = file.readAll();
-        file.close();
-        try {
-            eval(String(s));
-        } catch (e) {
-            error(String(e));
+    if (filename) {
+        var file = fs.read(filename);
+        if (file) {
+            var s = file.readAll();
+            file.close();
+            try {
+                return eval(String(s));
+            } catch (e) {
+                error(String(e));
+            }
         }
-    } else {
-        error("Couldn't read file!");
     }
+    error("Couldn't read file!");
 };
 
 events.pull = function (filter) {

@@ -22,12 +22,6 @@ public class ComputerFileStorage {
             this.computer = computer;
         }
 
-        public void closeAll() {
-            while (APIFile.openFiles.size() > 0) {
-                APIFile.openFiles.get(0).close();
-            }
-        }
-
         public Object combine(String file, String other) throws IOException {
             return JavaScriptEngine.convert(APIFile.combine(file, other), computer.getScope());
         }
@@ -49,7 +43,7 @@ public class ComputerFileStorage {
 
         public FileReadableJSAPI read(String dir) throws FileNotFoundException {
             File file = getComputerFile(dir);
-            if (file.exists() && file.isFile()) {
+            if (file != null && file.exists() && file.isFile()) {
                 try {
                     return new FileReadableJSAPI(computer, new FileInputStream(file));
                 } catch (Exception e) {
@@ -96,6 +90,7 @@ public class ComputerFileStorage {
         private File getComputerDirectory() {
             File d = new File(new File(ComputerManager.getWorldDirectory(), "jscomputing"), Integer.toString(computer.getID()));
             if (!d.exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 d.mkdirs();
             }
             return d;
@@ -110,7 +105,7 @@ public class ComputerFileStorage {
         private boolean isSandboxed(File file) {
             try {
                 File dir = getComputerDirectory();
-                return file.exists() && (file.equals(dir) || file.getCanonicalPath().startsWith(dir.getCanonicalPath()));
+                return file.equals(dir) || file.getCanonicalPath().startsWith(dir.getCanonicalPath());
             } catch (IOException e) {
                 return false;
             }
@@ -123,10 +118,15 @@ public class ComputerFileStorage {
          * @return The file, or null if it either doesn't exist, or isn't sandboxed.
          */
         private File getComputerFile(String rel) {
-            File f = new File(getComputerDirectory(), rel);
-            if (isSandboxed(f)) {
-                return f;
-            } else {
+            try {
+                File f = new File(getComputerDirectory(), rel);
+                if (isSandboxed(f)) {
+                    return f;
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
                 return null;
             }
         }

@@ -16,18 +16,20 @@ import java.util.Map;
 
 public class MapFileStorage {
 
-    public static MapFileStorageJSAPI create(ServerTerminalComputer computer, Map<String, URL> urlMap) {
-        return new MapFileStorageJSAPI(computer, urlMap);
+    public static MapFileStorageJSAPI create(ServerTerminalComputer computer, Map<String, URL> urlMap, boolean isIndexable) {
+        return new MapFileStorageJSAPI(computer, urlMap, isIndexable);
     }
 
     public static class MapFileStorageJSAPI implements IFileStorage {
 
         private ServerTerminalComputer computer;
         private Map<String, URL> urlMap;
+        private boolean isIndexable;
 
-        private MapFileStorageJSAPI(ServerTerminalComputer computer, Map<String, URL> urlMap) {
+        private MapFileStorageJSAPI(ServerTerminalComputer computer, Map<String, URL> urlMap, boolean isIndexable) {
             this.computer = computer;
             this.urlMap = urlMap;
+            this.isIndexable = isIndexable;
         }
 
         @Override
@@ -42,6 +44,7 @@ public class MapFileStorage {
 
         @Override
         public boolean isDirectory(String path) throws FileNotFoundException {
+            // TODO implement
             return false;
         }
 
@@ -68,14 +71,18 @@ public class MapFileStorage {
         @Override
         public Object dir(String path) {
             List<String> ls = new ArrayList<String>();
-            for (Map.Entry<String, URL> entry : urlMap.entrySet()) {
-                try {
-                    if (contains(path, entry.getValue().getPath())) {
-                        ls.add(entry.getValue().getFile());
+
+            if (isIndexable) {
+                for (Map.Entry<String, URL> entry : urlMap.entrySet()) {
+                    try {
+                        if (contains(path, entry.getKey())) {
+                            ls.add(entry.getKey());
+                        }
+                    } catch (URISyntaxException ignored) {
                     }
-                } catch (URISyntaxException ignored) {
                 }
             }
+
             return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls.toArray(), ls.size(), Object[].class));
         }
 
