@@ -1,6 +1,5 @@
 package com.nickardson.jscomputing.client.rendering;
 
-import com.nickardson.jscomputing.JSComputingMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
@@ -121,15 +120,14 @@ public class RenderUtilities {
 
     private static void drawBoundImageInternal(double x, double y, double width, double height, double rotation, double u, double v, Color color) {
         glColor(color);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
         GL11.glPushMatrix();
-        GL11.glTranslated(x + width / 2, y + height / 2, 0);
-        GL11.glRotated(rotation, 0, 0, 1);
-        GL11.glTranslated(-(x + width / 2), -(y + height / 2), 0);
-        drawTexturedModalRect(x, y, u, v, width, height);
+        {
+            GL11.glTranslated(x + width / 2, y + height / 2, 0);
+            GL11.glRotated(rotation, 0, 0, 1);
+            GL11.glTranslated(-(x + width / 2), -(y + height / 2), 0);
+            drawTexturedModalRect(x, y, u, v, width, height);
+        }
         GL11.glPopMatrix();
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 
     /**
