@@ -1,8 +1,8 @@
 package com.nickardson.jscomputing.client.gui;
 
 import com.nickardson.jscomputing.JSComputingMod;
+import com.nickardson.jscomputing.client.rendering.ImageFontRenderer;
 import com.nickardson.jscomputing.client.rendering.RenderUtilities;
-import com.nickardson.jscomputing.client.rendering.UnicodeFontRenderer;
 import com.nickardson.jscomputing.common.computers.ClientTerminalComputer;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
@@ -12,9 +12,6 @@ import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -23,14 +20,11 @@ public class GuiTerminalComputer extends GuiContainer {
     public static int BACK_HEIGHT = 470;
     public static int TEXT_OFFSET_X = 28;
     public static int TEXT_OFFSET_Y = 22;
+
     public static boolean USE_DISPLAY_LISTS = true;
 
-    /**
-     * The font to render terminal inputText in.
-     */
-    private static UnicodeFontRenderer font = null;
-
-    private static ResourceLocation back = null;
+    private static ImageFontRenderer font = new ImageFontRenderer(new ResourceLocation(JSComputingMod.ASSET_ID, "fonts/font-half.png"), 160, 294, 10, 21);
+    private static ResourceLocation back = new ResourceLocation(JSComputingMod.ASSET_ID, "textures/gui/terminal.png");
 
     /**
      * Whether keys are sent to the developer console.
@@ -64,14 +58,6 @@ public class GuiTerminalComputer extends GuiContainer {
 
     public GuiTerminalComputer(TileEntityTerminalComputer entityTerminalComputer) {
         super(new ContainerTerminalComputer(entityTerminalComputer));
-
-        if (font == null) {
-            font = UnicodeFontRenderer.fromInputStream(GuiTerminalComputer.class.getResourceAsStream("/assets/jscomputing/fonts/Inconsolata.ttf"), 20, Font.PLAIN);
-        }
-
-        if (back == null) {
-            back = new ResourceLocation(JSComputingMod.ASSET_ID, "textures/gui/terminal.png");
-        }
 
         this.computer = (ClientTerminalComputer) entityTerminalComputer.getClientComputer();
 
@@ -168,31 +154,41 @@ public class GuiTerminalComputer extends GuiContainer {
             glDeleteLists(displayList, 1);
         }
 
-        // Bit of a hack to have Slick2D generate the display lists it needs offscreen.
-        glPushMatrix();
-        {
-            glTranslated(-100000, -100000, 0);
-            drawLines();
-        }
-        glPopMatrix();
-
         displayList = glGenLists(1);
         glNewList(displayList, GL_COMPILE);
         {
-            drawLines();
+            render();
         }
         glEndList();
     }
 
-    private void drawLines() {
+    private void render() {
         glEnable(GL_TEXTURE_2D);
 
         mc.renderEngine.bindTexture(back);
         RenderUtilities.drawBoundImage(0, 0, BACK_WIDTH, BACK_HEIGHT);
 
-        for (int y = 0; y < screenHeight; y++) {
+        /*for (int y = 0; y < screenHeight; y++) {
             font.drawString(new String(lines[y]), TEXT_OFFSET_X, (y * 20) + TEXT_OFFSET_Y, 0xFFFFFF);
+        }*/
+
+        glColor3f(1, 1, 1);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+
+        font.begin();
+
+        for (int y = 0; y < screenHeight; y++) {
+            int x = 0;
+            for (char c : lines[y]) {
+                if (c > 0) {
+                    font.drawCharacter(c, TEXT_OFFSET_X + x * font.getCharacterWidth(), TEXT_OFFSET_Y + y * 20);
+                }
+                x++;
+            }
         }
+
+        glDisable(GL_TEXTURE_2D);
     }
 
     private void draw() {
@@ -201,23 +197,24 @@ public class GuiTerminalComputer extends GuiContainer {
 
         if (USE_DISPLAY_LISTS) {
             if (displayList != -1) {
-                GL11.glPushMatrix();
+                glPushMatrix();
                 {
-                    GL11.glTranslated(xPos, yPos, 0);
+                    glTranslated(xPos, yPos, 0);
                     glCallList(displayList);
                 }
-                GL11.glPopMatrix();
+                glPopMatrix();
             } else {
                 mc.renderEngine.bindTexture(back);
+                font.begin();
                 updateLines(true);
             }
         } else {
-            GL11.glPushMatrix();
+            glPushMatrix();
             {
-                GL11.glTranslated(xPos, yPos, 0);
-                drawLines();
+                glTranslated(xPos, yPos, 0);
+                render();
             }
-            GL11.glPopMatrix();
+            glPopMatrix();
         }
     }
 
