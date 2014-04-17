@@ -6,7 +6,7 @@ os = {
 os.commands.push({
     "name": "cls",
     "help": "Clears the console.",
-    "execute": function (args) {
+    "execute": function () {
         screen.scroll(-screen.height + 1);
     }
 });
@@ -55,7 +55,7 @@ os.commands.push({
 
             try {
                 var result = eval(prompt("JS"));
-                if (result) {
+                if (result != undefined && typeof result != "function") {
                     print(result);
                 }
             } catch (e) {
@@ -103,7 +103,7 @@ os.getCommand = function (name) {
             return c;
         }
     }
-}
+};
 
 /**
  * Gets the text that should be displayed in the prompt area.
@@ -114,7 +114,7 @@ os.getDirectoryText = function (dir) {
         return dir.substr(1);
     }
     return dir;
-}
+};
 
 print("Booted up.");
 
