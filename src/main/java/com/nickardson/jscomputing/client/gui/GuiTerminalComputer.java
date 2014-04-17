@@ -163,59 +163,44 @@ public class GuiTerminalComputer extends GuiContainer {
     }
 
     private void render() {
-        glEnable(GL_TEXTURE_2D);
-
-        mc.renderEngine.bindTexture(back);
-        RenderUtilities.drawBoundImage(0, 0, BACK_WIDTH, BACK_HEIGHT);
-
-        /*for (int y = 0; y < screenHeight; y++) {
-            font.drawString(new String(lines[y]), TEXT_OFFSET_X, (y * 20) + TEXT_OFFSET_Y, 0xFFFFFF);
-        }*/
-
         glColor3f(1, 1, 1);
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
 
+        mc.renderEngine.bindTexture(back);
+        RenderUtilities.drawBoundImage(0, 0, BACK_WIDTH, BACK_HEIGHT);
+
         font.begin();
 
         for (int y = 0; y < screenHeight; y++) {
-            int x = 0;
-            for (char c : lines[y]) {
-                if (c > 0) {
-                    font.drawCharacter(c, TEXT_OFFSET_X + x * font.getCharacterWidth(), TEXT_OFFSET_Y + y * 20);
-                }
-                x++;
-            }
+            font.drawString(lines[y], TEXT_OFFSET_X, TEXT_OFFSET_Y + y * 20);
         }
 
         glDisable(GL_TEXTURE_2D);
     }
 
     private void draw() {
-        int xPos = (int) (RenderUtilities.getWidth() / 2.0 - BACK_WIDTH / 2.0),
-                yPos = (int) (RenderUtilities.getHeight() / 2.0 - BACK_HEIGHT / 2.0);
+        int x = (int) (RenderUtilities.getWidth() / 2.0 - BACK_WIDTH / 2.0),
+            y = (int) (RenderUtilities.getHeight() / 2.0 - BACK_HEIGHT / 2.0);
 
-        if (USE_DISPLAY_LISTS) {
-            if (displayList != -1) {
-                glPushMatrix();
-                {
-                    glTranslated(xPos, yPos, 0);
+        glPushMatrix();
+        {
+            glTranslated(x, y, 0);
+
+            if (USE_DISPLAY_LISTS) {
+                if (displayList != -1) {
                     glCallList(displayList);
+                } else {
+                    // Load textures for the first time.
+                    mc.renderEngine.bindTexture(back);
+                    mc.renderEngine.bindTexture(font.getResource());
+                    updateLines(true);
                 }
-                glPopMatrix();
             } else {
-                mc.renderEngine.bindTexture(back);
-                font.begin();
-                updateLines(true);
-            }
-        } else {
-            glPushMatrix();
-            {
-                glTranslated(xPos, yPos, 0);
                 render();
             }
-            glPopMatrix();
         }
+        glPopMatrix();
     }
 
     @Override

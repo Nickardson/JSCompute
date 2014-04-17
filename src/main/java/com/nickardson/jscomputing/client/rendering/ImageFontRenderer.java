@@ -4,6 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 
+/**
+ * A simple font renderer which draws a monospace font from an image file.
+ */
 public class ImageFontRenderer {
     ResourceLocation resource;
 
@@ -20,6 +23,9 @@ public class ImageFontRenderer {
         this.characterHeight = characterHeight;
     }
 
+    /**
+     * Should be called before starting to draw text.
+     */
     public void begin() {
         Minecraft.getMinecraft().renderEngine.bindTexture(resource);
     }
@@ -36,6 +42,20 @@ public class ImageFontRenderer {
         tessellator.addVertexWithUV(xPos + characterWidth, yPos, 0, (uStart + characterWidth) / textureWidth, vStart / textureHeight);
 
         tessellator.draw();
+    }
+
+    public void drawString(char[] line, int xPos, int yPos) {
+        int x = 0;
+        for (char c : line) {
+            if (c > 0) {
+                drawCharacter(c, xPos + x * getCharacterWidth(), yPos);
+            }
+            x++;
+        }
+    }
+
+    public void drawString(String line, int xPos, int yPos) {
+        drawString(line.toCharArray(), xPos, yPos);
     }
 
     public ResourceLocation getResource() {
