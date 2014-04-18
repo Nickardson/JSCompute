@@ -109,7 +109,11 @@ public class MapFileStorage {
          * @param path The string.
          */
         private String removeEdgeSlash(String path) {
-            return path.replaceAll("(^[\\\\/]*)|([\\\\/]*$)", "");
+            if (path != null) {
+                return path.replaceAll("(^[\\\\/]*)|([\\\\/]*$)", "");
+            } else {
+                return null;
+            }
         }
     }
 }
