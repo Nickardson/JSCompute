@@ -20,6 +20,7 @@ public class GuiTerminalComputer extends GuiContainer {
     public static int BACK_HEIGHT = 470;
     public static int TEXT_OFFSET_X = 28;
     public static int TEXT_OFFSET_Y = 22;
+    public static int LINE_SEPARATION = 20;
 
     public static boolean USE_DISPLAY_LISTS = true;
 
@@ -148,6 +149,7 @@ public class GuiTerminalComputer extends GuiContainer {
     }
 
     int displayList = -1;
+    int cursorDisplayList = -1;
 
     private void updateDisplayList() {
         if (displayList != -1) {
@@ -162,6 +164,31 @@ public class GuiTerminalComputer extends GuiContainer {
         glEndList();
     }
 
+    private void createCursorDisplayList() {
+        if (cursorDisplayList == -1) {
+            cursorDisplayList = glGenLists(1);
+            glNewList(cursorDisplayList, GL_COMPILE);
+            {
+                renderCursor();
+            }
+            glEndList();
+        }
+    }
+
+    private void renderCursor() {
+        glLineWidth(2);
+        glColor3d(1.0, 1.0, 1.0);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LINE_SMOOTH);
+
+        glBegin(GL_LINES);
+        {
+            glVertex2d(2, 0);
+            glVertex2d(2, font.getCharacterHeight());
+        }
+        glEnd();
+    }
+
     private void render() {
         glColor3f(1, 1, 1);
         glEnable(GL_TEXTURE_2D);
@@ -173,7 +200,7 @@ public class GuiTerminalComputer extends GuiContainer {
         font.begin();
 
         for (int y = 0; y < screenHeight; y++) {
-            font.drawString(lines[y], TEXT_OFFSET_X, TEXT_OFFSET_Y + y * 20);
+            font.drawString(lines[y], TEXT_OFFSET_X, TEXT_OFFSET_Y + y * LINE_SEPARATION);
         }
 
         glDisable(GL_TEXTURE_2D);
@@ -188,16 +215,33 @@ public class GuiTerminalComputer extends GuiContainer {
             glTranslated(x, y, 0);
 
             if (USE_DISPLAY_LISTS) {
-                if (displayList != -1) {
-                    glCallList(displayList);
-                } else {
+                if (displayList == -1) {
                     // Load textures for the first time.
                     mc.renderEngine.bindTexture(back);
                     mc.renderEngine.bindTexture(font.getResource());
                     updateLines(true);
                 }
+
+                glCallList(displayList);
             } else {
                 render();
+            }
+
+            if (computer.isCursorVisible() && Math.floor(System.currentTimeMillis() / 750) % 2 == 0) {
+                glPushMatrix();
+                {
+                    glTranslated(TEXT_OFFSET_X + computer.getCursorX() * font.getCharacterWidth(), TEXT_OFFSET_Y + computer.getCursorY() * LINE_SEPARATION, 0);
+                    if (USE_DISPLAY_LISTS) {
+                        if (cursorDisplayList == -1) {
+                            createCursorDisplayList();
+                        }
+
+                        glCallList(cursorDisplayList);
+                    } else {
+                        renderCursor();
+                    }
+                }
+                glPopMatrix();
             }
         }
         glPopMatrix();

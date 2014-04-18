@@ -53,6 +53,7 @@ var prompt = function (prefix, filter) {
     var result = "",
         x = screen.cursor.x,
         y = screen.cursor.y;
+    screen.cursor.visible = true;
     while (true) {
         // Reset cursor to the start.
         screen.cursor.set(x, y);
@@ -64,14 +65,11 @@ var prompt = function (prefix, filter) {
             displayed = filter(displayed);
         }
 
-        // The spare whitespace left over.
-        var spare = screen.width - displayed.length + 2;
-        // Uses concatenation on an empty array to create whitespace.
-        var whitespace = spare > 0 ? new Array(spare).join(" ") : "";
-
         // Fit the text by chopping off anything too far to the left, and fill the blank area.
-        displayed = displayed.substr(Math.max(0, displayed.length - screen.width)) + whitespace;
+        displayed = displayed.substr(Math.max(0, displayed.length - screen.width));
 
+        screen.clearLine();
+        screen.cursor.x = 0;
         screen.write(displayed);
 
         // Wait for an event.
@@ -88,6 +86,7 @@ var prompt = function (prefix, filter) {
 
         // Enter breaks out of the input loop, and we can return our input.
         if (event.key == "RETURN") {
+            screen.cursor.visible = false;
             print();
             return result;
         }

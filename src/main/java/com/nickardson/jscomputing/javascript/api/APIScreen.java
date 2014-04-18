@@ -32,6 +32,14 @@ public class APIScreen {
             public void set(int x, int y) {
                 computer.setCursor(x, y);
             }
+
+            public void setVisible(boolean visible) {
+                computer.setCursorVisible(visible);
+            }
+
+            public boolean isVisible() {
+                return computer.isCursorVisible();
+            }
         }
 
         private Cursor cursor;
@@ -191,23 +199,62 @@ public class APIScreen {
         }
 
         /**
+         * Clears the current line.
+         */
+        public void clearLine() {
+            clearLine(getCursor().getY());
+        }
+
+        /**
+         * Clears the current line to the given character.
+         * @param str The character the screen will be cleared to.
+         */
+        public void clearLine(String str) {
+            clearLine(getCursor().getY(), str);
+        }
+
+        /**
+         * Clears the given line.
+         * @param y Clears the given line.
+         */
+        public void clearLine(int y) {
+            clearLineInternal(y, (byte) 0);
+        }
+
+        /**
+         * Clears the given line.
+         * @param y Clears the given line.
+         * @param str The character the screen will be cleared to.
+         */
+        public void clearLine(int y, String str) {
+            byte b = 0;
+            if (str.length() > 0) {
+                b = (byte) str.charAt(0);
+            }
+
+            clearLineInternal(y, b);
+        }
+
+        private void clearLineInternal(int y, byte b) {
+            byte[][] lines = computer.getLines();
+            for (int x = 0; x < getWidth(); x++) {
+                lines[y][x] = b;
+            }
+        }
+
+        /**
          * Clears the screen, with the first character of the given string.
          *
          * @param str The character the screen will be cleared to.
          */
         public void clear(String str) {
-            byte b;
+            byte b = 0;
             if (str.length() > 0) {
                 b = (byte) str.charAt(0);
-            } else {
-                b = 0;
             }
 
-            byte[][] lines = computer.getLines();
             for (int y = 0; y < getHeight(); y++) {
-                for (int x = 0; x < getWidth(); x++) {
-                    lines[y][x] = b;
-                }
+                clearLineInternal(y, b);
             }
 
             computer.setCursor(0, 0);

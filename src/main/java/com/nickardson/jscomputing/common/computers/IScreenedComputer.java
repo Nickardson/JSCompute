@@ -57,4 +57,16 @@ public interface IScreenedComputer {
      * The Y coordinate
      */
     public void setCursor(int x, int y);
+
+    /**
+     * Gets whether the cursor should be rendered.
+     * @return Whether the cursor is visible.
+     */
+    public boolean isCursorVisible();
+
+    /**
+     * Sets whether the cursor should be rendered.
+     * @param visible Whether the cursor is visible.
+     */
+    public void setCursorVisible(boolean visible);
 }

@@ -3,6 +3,7 @@ package com.nickardson.jscomputing.common.computers;
 import com.nickardson.jscomputing.common.computers.events.*;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
+import com.nickardson.jscomputing.common.network.PacketCursorUpdate;
 import com.nickardson.jscomputing.common.network.PacketScreenUpdate;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
@@ -59,12 +60,24 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
             linesUpdated = false;
             lastLineSend = 0;
 
-            PacketScreenUpdate packet = new PacketScreenUpdate(getID(), lines);
+            PacketScreenUpdate packet = new PacketScreenUpdate(getID(), lines, isCursorVisible(), getCursorX(), getCursorY());
 
             for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
                 IComputer computer = ((ContainerTerminalComputer) player.openContainer).getTileEntity().getServerComputer();
                 if (computer != null && computer.getID() == this.getID()) {
                     ChannelHandler.sendTo(packet, player);
+                }
+            }
+        } else {
+            if (isCursorUpdated()) {
+                setCursorUpdated(false);
+                PacketCursorUpdate packet = new PacketCursorUpdate(getID(), isCursorVisible(), getCursorX(), getCursorY());
+
+                for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
+                    IComputer computer = ((ContainerTerminalComputer) player.openContainer).getTileEntity().getServerComputer();
+                    if (computer != null && computer.getID() == this.getID()) {
+                        ChannelHandler.sendTo(packet, player);
+                    }
                 }
             }
         }

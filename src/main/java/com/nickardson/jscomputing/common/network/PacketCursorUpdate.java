@@ -6,44 +6,43 @@ import com.nickardson.jscomputing.common.inventory.IContainerComputer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class PacketScreenUpdate extends PacketCharArray {
+public class PacketCursorUpdate implements IPacket {
 
-    int id = 0;
+    int id;
 
-    boolean showCursor;
+    boolean cursorVisible;
 
     int cursorX;
     int cursorY;
 
-    public PacketScreenUpdate() {
+    public PacketCursorUpdate() {
     }
 
-    public PacketScreenUpdate(int id, byte[][] array, boolean showCursor, int cursorX, int cursorY) {
-        super(array);
+    public PacketCursorUpdate(int id, boolean cursorVisible, int cursorX, int cursorY) {
         this.id = id;
-        this.showCursor = showCursor;
+        this.cursorVisible = cursorVisible;
         this.cursorX = cursorX;
         this.cursorY = cursorY;
     }
 
     @Override
     public void readBytes(ByteBuf bytes) {
-        id = bytes.readInt();
-        showCursor = bytes.readBoolean();
-        cursorX = bytes.readInt();
-        cursorY = bytes.readInt();
-
-        super.readBytes(bytes);
+        this.id = bytes.readInt();
+        this.cursorVisible = bytes.readBoolean();
+        if (cursorVisible) {
+            this.cursorX = bytes.readInt();
+            this.cursorY = bytes.readInt();
+        }
     }
 
     @Override
     public void writeBytes(ByteBuf bytes) {
         bytes.writeInt(id);
-        bytes.writeBoolean(showCursor);
-        bytes.writeInt(cursorX);
-        bytes.writeInt(cursorY);
-
-        super.writeBytes(bytes);
+        bytes.writeBoolean(cursorVisible);
+        if (cursorVisible) {
+            bytes.writeInt(cursorX);
+            bytes.writeInt(cursorY);
+        }
     }
 
     @Override
@@ -55,9 +54,10 @@ public class PacketScreenUpdate extends PacketCharArray {
             if (computer instanceof IScreenedComputer) {
                 if (computer.getID() == id) {
                     IScreenedComputer c = (IScreenedComputer) computer;
-                    c.setCursorVisible(showCursor);
-                    c.setCursor(cursorX, cursorY);
-                    c.updateLines(array);
+                    c.setCursorVisible(cursorVisible);
+                    if (cursorVisible) {
+                        c.setCursor(cursorX, cursorY);
+                    }
                 }
             }
         }

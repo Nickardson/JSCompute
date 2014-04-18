@@ -12,15 +12,37 @@ public abstract class AbstractTerminalComputer extends AbstractComputer implemen
     int cursorX = 0;
     int cursorY = 0;
 
+    boolean cursorVisible = false;
+    boolean cursorUpdated = false;
+
     public AbstractTerminalComputer(int id) {
         super(id);
 
         lines = new byte[getHeight()][getWidth()];
     }
 
+    public boolean isCursorUpdated() {
+        return cursorUpdated;
+    }
+
+    public void setCursorUpdated(boolean cursorUpdated) {
+        this.cursorUpdated = cursorUpdated;
+    }
+
     @Override
     public byte[][] getLines() {
         return lines;
+    }
+
+    @Override
+    public boolean isCursorVisible() {
+        return cursorVisible;
+    }
+
+    @Override
+    public void setCursorVisible(boolean cursorVisible) {
+        this.cursorVisible = cursorVisible;
+        cursorUpdated = true;
     }
 
     @Override
@@ -52,5 +74,6 @@ public abstract class AbstractTerminalComputer extends AbstractComputer implemen
     public void setCursor(int x, int y) {
         this.cursorX = Math.min(Math.max(x, 0), getWidth() - 1);
         this.cursorY = Math.min(Math.max(y, 0), getHeight() - 1);
+        this.cursorUpdated = true;
     }
 }
