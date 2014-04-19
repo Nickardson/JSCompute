@@ -35,7 +35,6 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     public void updateLines(byte[][] lines) {
         linesUpdated = true;
         setLines(lines);
-        sendLines(false);
     }
 
     /**
@@ -58,6 +57,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         if (force || (linesUpdated && lastLineSend >= LINE_SEND_TICK_INTERVAL)) {
             linesUpdated = false;
             lastLineSend = 0;
+            setCursorUpdated(false);
 
             PacketScreenUpdate packet = new PacketScreenUpdate(getID(), lines, isCursorVisible(), getCursorX(), getCursorY());
 
