@@ -15,7 +15,7 @@ includeLibrary("stringutils.js");
 var print = function (arg) {
     if (arg != undefined) {
         // Split up the wrapped text by newlines, then print each on a new line.
-        var split = (arg + "").wrap(screen.width).split("\n");
+        var split = String.wrap((arg + ""), screen.width).split("\n");
         for (var i = 0; i < split.length; i++) {
             screen.print(split[i]);
         }

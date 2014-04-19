@@ -8,7 +8,7 @@ print("Booted up.");
 //noinspection InfiniteLoopJS
 while (true) {
     var _input = prompt(os.cwd),
-        _args = _input.split(" ");
+        _args = String.args(_input);
 
     var path = os.path.concat(os.cwd);
     for (var i = 0; i < path.length; i++) {
