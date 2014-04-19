@@ -5,8 +5,32 @@ delete java;
 delete com;
 delete net;
 
-includeLibrary("Events.js");
-includeLibrary("stringutils.js");
+//noinspection JSUnusedLocalSymbols
+var run = function (filename, args) {
+    if (filename) {
+        var file = fs.read(filename);
+        if (file) {
+            var s = file.readAll();
+            file.close();
+            try {
+                return eval(String(s));
+            } catch (e) {
+                if (typeof e == "number") {
+                    if (e != 0) {
+                        error("exited with code " + e);
+                    }
+                } else {
+                    error(String(e));
+                }
+                return e;
+            }
+        }
+    }
+    error("Couldn't read file!");
+};
+
+run("lib/stringutils");
+run("lib/events");
 
 /**
  * Prints the given argument, with text wrapping.
@@ -110,30 +134,6 @@ var include = function (filename) {
     } else {
         error("Couldn't read file!");
     }
-};
-
-//noinspection JSUnusedLocalSymbols
-var run = function (filename, args) {
-    if (filename) {
-        var file = fs.read(filename);
-        if (file) {
-            var s = file.readAll();
-            file.close();
-            try {
-                return eval(String(s));
-            } catch (e) {
-                if (typeof e == "number") {
-                    if (e != 0) {
-                        error("exited with code " + e);
-                    }
-                } else {
-                    error(String(e));
-                }
-                return e;
-            }
-        }
-    }
-    error("Couldn't read file!");
 };
 
 events.pull = function (filter) {

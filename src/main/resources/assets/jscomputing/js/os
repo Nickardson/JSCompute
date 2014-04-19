@@ -3,6 +3,10 @@ os = {
     "path": ["bin"]
 };
 
+if (fs.exists("startup")) {
+    run("startup");
+}
+
 print("Booted up.");
 
 //noinspection InfiniteLoopJS
