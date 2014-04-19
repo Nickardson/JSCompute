@@ -85,8 +85,10 @@ public class MultiFileStorage {
 
             for (IFileStorage store : stores) {
                 NativeArray array = (NativeArray) store.dir(path);
-                for (int i = 0; i < array.getLength(); i++) {
-                    ls.add(array.get(i));
+                if (array != null) {
+                    for (int i = 0; i < array.getLength(); i++) {
+                        ls.add(array.get(i));
+                    }
                 }
             }
 

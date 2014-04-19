@@ -12,7 +12,9 @@ import com.nickardson.jscomputing.javascript.api.APIEvent;
 import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
 import com.nickardson.jscomputing.javascript.api.fs.*;
-import com.nickardson.jscomputing.javascript.methods.*;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionYield;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.lwjgl.input.Keyboard;
 import org.mozilla.javascript.Context;
@@ -21,8 +23,6 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 import java.io.FileNotFoundException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -144,19 +144,14 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     public void start() {
         scope.defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
         scope.defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.READONLY);
-        scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/com/nickardson/jscomputing/js/"), ScriptableObject.READONLY);
         scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
         scope.defineProperty("computer", APIComputer.create(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("screen", APIScreen.create(this), ScriptableObject.READONLY);
 
         ComputerFileStorage.ComputerFileStorageJSAPI computerFS = ComputerFileStorage.create(this);
 
-        MapFileStorage.MapFileStorageJSAPI filesOS = MapFileStorage.create(this, new HashMap<String, URL>() {{
-            put("edit", ServerTerminalComputer.class.getResource("/assets/jscomputing/js/edit.js"));
-        }}, false);
-
         final WritableMultiFileStorage.WritableMultiFileStorageJSAPI fs = WritableMultiFileStorage.create(this, new IFileStorage[] {
-                filesOS,
+                JarFileStorage.create(this, "assets/jscomputing/js/bin", "bin"),
                 computerFS
         }, computerFS);
 

@@ -1,0 +1,6 @@
+if (args[0] == "/?") {
+    print("usage: edit [filename]");
+    throw 0;
+}
+
+print("Editing " + fs.combine(os.cwd, args[0]));

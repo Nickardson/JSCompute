@@ -23,7 +23,7 @@ public class JavaScriptEngine {
 
     /**
      * Called when an exception is thrown by a script.
-     * @param exception
+     * @param exception The JavaScript exception.
      */
     public static void handleScriptError(Throwable exception) {
         // Unwrap exception
@@ -81,7 +81,7 @@ public class JavaScriptEngine {
      * @param name The name of the library to run.
      */
     public static void runLibrary(Scriptable scope, String name) {
-        runResource(scope, "/com/nickardson/jscomputing/js/" + name);
+        runResource(scope, "/assets/jscomputing/js/" + name);
     }
 
     /**

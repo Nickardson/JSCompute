@@ -1,15 +1,10 @@
 os = {
     "commands": [],
-    "cwd": "/"
+    "cwd": "/",
+    "path": [
+        "bin"
+    ]
 };
-
-os.commands.push({
-    "name": "cls",
-    "help": "Clears the console.",
-    "execute": function () {
-        screen.scroll(-screen.height + 1);
-    }
-});
 
 os.commands.push({
     "name": "cd",
@@ -39,13 +34,20 @@ os.commands.push({
 os.commands.push({
     "name": "dir",
     "help": "Gives a list of files in the current directory.",
-    "execute": function () {
-        fs.dir(os.cwd).map(function(path) {
-            var fullPath = fs.combine(os.cwd, path);
-            if (fs.isFile(fullPath)) {
+    "execute": function (args) {
+        var fullPath = os.cwd;
+        if (args.length > 0) {
+            fullPath = fs.combine(os.cwd, args[0]);
+        }
+
+        fs.dir(fullPath).map(function(path) {
+            var filePath = fs.combine(fullPath, path);
+            if (fs.isFile(filePath)) {
                 return path;
-            } else if (fs.isDirectory(fullPath)) {
+            } else if (fs.isDirectory(filePath)) {
                 return path + "/";
+            } else {
+                return path + "?";
             }
         }).forEach(print);
     }
@@ -142,9 +144,25 @@ while (true) {
             print("OS Error: " + ex);
         }
     } else {
-        // Try to run the file.
-        if (fs.exists(_args[0]) && fs.isFile(_args[0])) {
-            run(fs.combine(os.cwd, _args[0]), _args.slice(1));
+        function runWithPath(path) {
+            var fullPath = fs.combine(path, _args[0]);
+            if (fs.exists(fullPath) && fs.isFile(fullPath)) {
+                run(fullPath, _args.slice(1));
+                return true;
+            }
+            return false;
+        }
+
+        // Try to run the file, first looking on the path.
+        var ran = false;
+        for (var i = 0; i < os.path.length; i++) {
+            if (runWithPath(os.path[i])) {
+                ran = true;
+                break;
+            }
+        }
+        if (!ran) {
+            runWithPath(os.cwd);
         }
     }
 }

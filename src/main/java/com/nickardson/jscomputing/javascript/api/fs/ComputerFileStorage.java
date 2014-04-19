@@ -68,12 +68,18 @@ public class ComputerFileStorage {
             return null;
         }
 
+        @Override
         public Object dir(String dir) {
             File f = new File(getComputerDirectory(), dir);
-            if (isSandboxed(f)) {
-                Object[] ls = f.list();
-                return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls, ls.length, Object[].class));
-            } else {
+            try {
+                if (exists(dir) && isSandboxed(f)) {
+                    Object[] ls = f.list();
+                    return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls, ls.length, Object[].class));
+                } else {
+                    return null;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
                 return null;
             }
         }

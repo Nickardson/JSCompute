@@ -78,7 +78,8 @@ public class MapFileStorage {
                         if (contains(path, entry.getKey())) {
                             ls.add(entry.getKey());
                         }
-                    } catch (URISyntaxException ignored) {
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
                 }
             }

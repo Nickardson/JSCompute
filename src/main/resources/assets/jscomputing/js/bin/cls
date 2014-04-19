@@ -1,0 +1,7 @@
+if (args[0] == "/?") {
+    print("Clears the screen.");
+    print("usage: cls");
+    throw 0;
+}
+
+screen.scroll(-screen.height + 1);

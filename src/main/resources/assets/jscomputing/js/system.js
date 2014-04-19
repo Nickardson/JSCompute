@@ -122,7 +122,12 @@ var run = function (filename, args) {
             try {
                 return eval(String(s));
             } catch (e) {
-                error(String(e));
+                if (typeof e == "number" && e != 0) {
+                    error("exited with code " + e);
+                } else {
+                    error(String(e));
+                }
+                return e;
             }
         }
     }
