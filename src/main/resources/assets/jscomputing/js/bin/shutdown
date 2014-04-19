@@ -1,0 +1,7 @@
+if (args[0] == "/?") {
+    print("Shuts down the computer.");
+    print("usage: shutdown");
+    throw 0;
+}
+
+computer.off();

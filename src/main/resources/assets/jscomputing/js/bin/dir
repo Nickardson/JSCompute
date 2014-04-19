@@ -1,0 +1,22 @@
+if (args[0] == "/?") {
+    print("Gives a list of files in a directory.");
+    print("If no directory is provided, the current directory is checked.");
+    print("usage: dir [optional directory]");
+    throw 0;
+}
+
+var fullPath = os.cwd;
+if (args.length > 0) {
+    fullPath = fs.combine(os.cwd, args[0]);
+}
+
+fs.dir(fullPath).map(function(path) {
+    var filePath = fs.combine(fullPath, path);
+    if (fs.isFile(filePath)) {
+        return path;
+    } else if (fs.isDirectory(filePath)) {
+        return path + "/";
+    } else {
+        return path + "?";
+    }
+}).forEach(print);

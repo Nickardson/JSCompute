@@ -1,0 +1,16 @@
+if (args[0] == "/?") {
+    print("Changes the directory.");
+    print("usage: cd [directory]");
+    throw 0;
+}
+
+var fullPath = fs.combine(os.cwd, args[0]);
+if (fs.exists(fullPath)) {
+    if (fs.isDirectory(fullPath)) {
+        os.cwd = fullPath;
+    } else {
+        print("Path is not a directory.");
+    }
+} else {
+    print("Cannot find the specified path");
+}

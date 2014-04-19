@@ -122,8 +122,10 @@ var run = function (filename, args) {
             try {
                 return eval(String(s));
             } catch (e) {
-                if (typeof e == "number" && e != 0) {
-                    error("exited with code " + e);
+                if (typeof e == "number") {
+                    if (e != 0) {
+                        error("exited with code " + e);
+                    }
                 } else {
                     error(String(e));
                 }

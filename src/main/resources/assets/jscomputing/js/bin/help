@@ -1,0 +1,10 @@
+// Display all commands
+if (args.length == 0) {
+    fs.dir("/bin").map(function (file) {
+        return " - " + file;
+    }).forEach(print);
+
+    print("Run '[command] /?' or 'help [command]' to get more information on a specific command.");
+} else {
+    run(fs.combine("/bin", args[0]), ["/?"]);
+}

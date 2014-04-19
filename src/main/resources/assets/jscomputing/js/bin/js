@@ -1,0 +1,23 @@
+if (args[0] == "/?") {
+    print("Starts an interactive JavaScript console");
+    print("usage: js");
+    throw 0;
+}
+
+print("Run exit() to stop.");
+
+var running = true;
+while (running) {
+    function exit() {
+        running = false;
+    }
+
+    try {
+        var result = eval(prompt("JS"));
+        if (result != undefined && typeof result != "function") {
+            print(result);
+        }
+    } catch (e) {
+        print("Error: " + e);
+    }
+}

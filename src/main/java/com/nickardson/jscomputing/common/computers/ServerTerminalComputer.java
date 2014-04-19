@@ -12,6 +12,7 @@ import com.nickardson.jscomputing.javascript.api.APIEvent;
 import com.nickardson.jscomputing.javascript.api.APIFile;
 import com.nickardson.jscomputing.javascript.api.APIScreen;
 import com.nickardson.jscomputing.javascript.api.fs.*;
+import com.nickardson.jscomputing.javascript.methods.APIFunctionIncludeClasspath;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionYield;
@@ -144,6 +145,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     public void start() {
         scope.defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
         scope.defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.READONLY);
+        scope.defineProperty("includeLibrary", new APIFunctionIncludeClasspath("/assets/jscomputing/js/"), ScriptableObject.READONLY);
         scope.defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
         scope.defineProperty("computer", APIComputer.create(tileEntity), ScriptableObject.READONLY);
         scope.defineProperty("screen", APIScreen.create(this), ScriptableObject.READONLY);
