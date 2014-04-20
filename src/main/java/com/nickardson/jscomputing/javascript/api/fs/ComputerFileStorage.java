@@ -64,7 +64,13 @@ public class ComputerFileStorage {
         }
 
         @Override
-        public FileWritableJSAPI append(String path) {
+        public FileWritableJSAPI append(String dir) {
+            File file = getComputerFile(dir);
+            try {
+                return new FileWritableJSAPI(new FileOutputStream(file, true));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return null;
         }
 
