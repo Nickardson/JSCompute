@@ -31,8 +31,11 @@ import java.util.concurrent.BlockingQueue;
 public class ServerTerminalComputer extends AbstractTerminalComputer implements IServerComputer, IScriptableComputer, IEventableComputer, IKeyboardableComputer {
     private boolean shutdown = false;
 
+    private long lastUpdate = 0;
+
     @Override
     public void updateLines(byte[][] lines) {
+        lastUpdate = System.currentTimeMillis();
         linesUpdated = true;
         setLines(lines);
     }
@@ -45,7 +48,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     /**
      * How many ticks ago the last terminal update was.
      */
-    private int lastLineSend = 0;
+    private int lastSend = 0;
 
     /**
      * Whether the terminal has changed since the last update sent.
@@ -54,21 +57,22 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     @Override
     public void sendLines(boolean force) {
-        if (force || (linesUpdated && lastLineSend >= LINE_SEND_TICK_INTERVAL)) {
-            linesUpdated = false;
-            lastLineSend = 0;
-            setCursorUpdated(false);
+        if (force || (lastSend >= LINE_SEND_TICK_INTERVAL && (System.currentTimeMillis() - lastUpdate > 70 || lastSend > LINE_SEND_TICK_INTERVAL * 3))) {
+            lastSend = 0;
 
-            PacketScreenUpdate packet = new PacketScreenUpdate(getID(), lines, isCursorVisible(), getCursorX(), getCursorY());
+            if (linesUpdated) {
+                linesUpdated = false;
+                setCursorUpdated(false);
 
-            for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
-                IComputer computer = ((ContainerTerminalComputer) player.openContainer).getTileEntity().getServerComputer();
-                if (computer != null && computer.getID() == this.getID()) {
-                    ChannelHandler.sendTo(packet, player);
+                PacketScreenUpdate packet = new PacketScreenUpdate(getID(), lines, isCursorVisible(), getCursorX(), getCursorY());
+
+                for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
+                    IComputer computer = ((ContainerTerminalComputer) player.openContainer).getTileEntity().getServerComputer();
+                    if (computer != null && computer.getID() == this.getID()) {
+                        ChannelHandler.sendTo(packet, player);
+                    }
                 }
-            }
-        } else {
-            if (isCursorUpdated()) {
+            } else if (isCursorUpdated()) {
                 setCursorUpdated(false);
                 PacketCursorUpdate packet = new PacketCursorUpdate(getID(), isCursorVisible(), getCursorX(), getCursorY());
 
@@ -99,7 +103,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
     @Override
     public void tick() {
         sendLines(false);
-        lastLineSend++;
+        lastSend++;
     }
 
     @Override
@@ -109,7 +113,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     @Override
     public void onPlayerOpenGui() {
-        lastLineSend = LINE_SEND_TICK_INTERVAL;
+        lastSend = LINE_SEND_TICK_INTERVAL;
         sendLines(false);
     }
 

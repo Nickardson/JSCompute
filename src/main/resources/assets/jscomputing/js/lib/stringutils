@@ -1,5 +1,6 @@
 /**
  * Wraps a string to the given length.
+ * @param str The string to wrap.
  * @param width The maximum width of the wrapped text.
  * @param [newline] (Optional) The separator between wrapped lines.  Defaults to newline.
  * @returns {String} The wrapped string.
@@ -20,11 +21,12 @@ String.wrap = function (str, width, newline) {
 
 /**
  * Centers a text with whitespace padding.
+ * @param str The string to center.
  * @param width The width to fill.
  * @param padding (Optional) The character to pad the blanks with.
  */
 String.center = function (str, width, padding) {
-    padding = padding || " "
+    padding = padding || " ";
     if (str.length < width) {
         return new Array(Math.floor((width - str.length) / 2)).join(padding) + str + new Array(Math.ceil((width - str.length) / 2)).join(padding);
     }
@@ -47,4 +49,24 @@ String.args = function (str) {
         list.push(results[1] ? results[1] : results[0]);
     }
     return list;
+};
+
+/**
+ * Inserts a string into another string, at the given index.
+ * @param str The original string
+ * @param index The location on the original string to insert the string at.
+ * @param str2 The string to insert.
+ */
+String.insert = function (str, index, str2) {
+    return str.substr(0, index) + str2 + str.substr(index);
+};
+
+/**
+ * Removes the given number of characters from a string, starting at a given index.
+ * @param str The string to snip from.
+ * @param index The starting index of the snip.
+ * @param count How many characters to snip;
+ */
+String.snip = function (str, index, count) {
+    return str.substr(0, index) + str.substr(index + count);
 };

@@ -3,4 +3,176 @@ if (args[0] == "/?") {
     throw 0;
 }
 
-print("Editing " + fs.combine(os.cwd, args[0]));
+// The name of the file we're editing.
+var file = fs.combine(os.cwd, args[0]);
+
+// The stored lines of the file.
+var lines = [];
+
+// The internal cursor.  Doesn't correspond to the screen cursor.
+var cursorX = 0,
+    cursorY = 0;
+
+// The offset of rendering.
+var scrollX = 0,
+    scrollY = 0;
+
+// Whether the menu is visible.
+var menu = false;
+
+/**
+ * Loads lines from the file.
+ */
+function load(filename) {
+    cursorX = 0;
+    cursorY = 0;
+    scrollX = 0;
+    scrollY = 0;
+
+    lines = [];
+    if (fs.exists(filename)) {
+        var read = fs.read(filename);
+        while (read.hasNextLine()) {
+            lines.push(read.nextLine());
+        }
+        read.close();
+    }
+    render();
+}
+
+function save(filename) {
+    var write = fs.write(filename);
+    lines.forEach(function (line) {
+        write.writeln(line);
+    });
+    write.close();
+}
+
+function sendCursor() {
+    screen.cursor.set(cursorX - scrollX, cursorY - scrollY);
+    screen.cursor.visible = true;
+}
+
+function render() {
+    screen.clear();
+    for (var i = scrollY; i < lines.length && i < scrollY + screen.height - 2; i++) {
+        screen.print(lines[i].substr(scrollX));
+    }
+
+    screen.cursor.set(0, screen.height - 2);
+    if (menu) {
+        print(new Array(screen.width).join("-"));
+        // TODO: Clipboard API
+        write("[Enter]: Save+Close, [S]ave, [D]iscard");
+    } else {
+
+    }
+
+    sendCursor();
+}
+
+function onKey(event) {
+    if (event.key == "LCONTROL") {
+        menu = !menu;
+        render();
+        return;
+    }
+
+    if (menu) {
+        menu = false;
+
+        if (event.key == "S") {
+            save(file);
+        } else if (event.key == "D") {
+            screen.clear();
+            throw 0;
+        } else if (event.key == "RETURN") {
+            save(file);
+            screen.clear();
+            throw 0;
+        } else {
+            // Default option, no action taken, reshow the menu.
+            menu = true;
+        }
+        render();
+        return;
+    }
+
+    if (event.key == "BACK") {
+        // If the current line has a character to be deleted,
+        if (cursorX > 0 && lines[cursorY].length > 0) {
+            // Remove the previous character from the string, and move left.
+            lines[cursorY] = String.snip(lines[cursorY], cursorX - 1, 1);
+            cursorX--;
+
+            render();
+        } else {
+            // If this isn't the first line, move the current line to the end of the previous line.
+            if (cursorY > 0) {
+                var len = lines[cursorY - 1].length;
+                lines[cursorY - 1] += lines.splice(cursorY, 1)[0];
+                cursorX = len;
+                cursorY--;
+                render();
+            }
+        }
+    } else if (event.key == "DELETE") {
+        // Remove the next character from the string.
+        // TODO: delete line and move to start of previous
+        if (cursorX < lines[cursorY].length && lines[cursorY].length > 0) {
+            lines[cursorY] = String.snip(lines[cursorY], cursorX, 1);
+            render();
+        }
+    } else if (event.key == "RETURN") {
+        // Remove everything after the cursor on the current line.
+        var after = lines[cursorY].substr(cursorX);
+        lines[cursorY] = lines[cursorY].substr(0, cursorX);
+
+        // Move the cursor down, and insert a new line with the after text.
+        lines.splice(cursorY + 1, 0, after);
+        cursorX = 0;
+        cursorY++;
+
+        render();
+    } else if (event.key == "LEFT") {
+        if (cursorX > 0) {
+            cursorX--;
+            sendCursor();
+        }
+    } else if (event.key == "RIGHT") {
+        if (cursorX < lines[cursorY].length) {
+            cursorX++;
+            sendCursor();
+        }
+    } else if (event.key == "UP") {
+        if (cursorY > 0) {
+            cursorY--;
+            sendCursor();
+        }
+    } else if (event.key == "DOWN") {
+        if (cursorY < lines.length - 1) {
+            cursorY++;
+            sendCursor();
+        }
+    } else if (event.key == "HOME") {
+        cursorX = 0;
+        scrollX = 0;
+        render();
+    } else if (event.key == "END") {
+        cursorX = lines[cursorY].length;
+        render();
+    } else if (screen.isPrintable(event.character)) {
+        // Insert the character into the current line.
+        lines[cursorY] = String.insert(lines[cursorY], cursorX, event.character);
+        cursorX++;
+        render();
+    }
+}
+
+load(file);
+
+//noinspection InfiniteLoopJS
+while (true) {
+    var event = events.pull("key");
+    onKey(event);
+}
