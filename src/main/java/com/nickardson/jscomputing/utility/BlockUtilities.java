@@ -5,12 +5,16 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockUtilities {
 
-    public static int getMetadataFromYaw(double yaw) {
+    public static int getCompassDirection(double yaw) {
         return MathHelper.floor_double((yaw * 4F) / 360F + 0.5D) & 3;
     }
 
+    public static int getMetadataFromYaw(double yaw) {
+        return getDirectionFromYaw(yaw).ordinal();
+    }
+
     public static ForgeDirection getDirectionFromYaw(double yaw) {
-        int look = getMetadataFromYaw(yaw);
+        int look = getCompassDirection(yaw);
 
         ForgeDirection direction;
         switch (look)
