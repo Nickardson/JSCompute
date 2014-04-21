@@ -1,29 +1,27 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
 import com.nickardson.jscomputing.common.computers.ComputerManager;
-import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
-import com.nickardson.jscomputing.javascript.JavaScriptEngine;
+import com.nickardson.jscomputing.common.computers.IComputer;
 import com.nickardson.jscomputing.javascript.api.APIFile;
 
 import java.io.*;
-import java.util.Arrays;
 
 public class ComputerFileStorage {
 
-    public static ComputerFileStorageJSAPI create(ServerTerminalComputer computer) {
+    public static ComputerFileStorageJSAPI create(IComputer computer) {
         return new ComputerFileStorageJSAPI(computer);
     }
 
     public static class ComputerFileStorageJSAPI implements IWritableFileStorage {
 
-        private ServerTerminalComputer computer;
+        private IComputer computer;
 
-        private ComputerFileStorageJSAPI(ServerTerminalComputer computer) {
+        private ComputerFileStorageJSAPI(IComputer computer) {
             this.computer = computer;
         }
 
         public Object combine(String file, String other) throws IOException {
-            return JavaScriptEngine.convert(APIFile.combine(file, other), computer.getScope());
+            return computer.convert(APIFile.combine(file, other));
         }
 
         public boolean exists(String dir) throws FileNotFoundException {
@@ -79,11 +77,9 @@ public class ComputerFileStorage {
             File f = new File(getComputerDirectory(), dir);
             try {
                 if (exists(dir) && isSandboxed(f)) {
-                    Object[] ls = f.list();
-                    return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls, ls.length, Object[].class));
-                } else {
-                    return null;
+                    return computer.convert(f.list());
                 }
+                return null;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 return null;
@@ -134,13 +130,11 @@ public class ComputerFileStorage {
                 File f = new File(getComputerDirectory(), rel);
                 if (isSandboxed(f)) {
                     return f;
-                } else {
-                    return null;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
             }
+            return null;
         }
     }
 }

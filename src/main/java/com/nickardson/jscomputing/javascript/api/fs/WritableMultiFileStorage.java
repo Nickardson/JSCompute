@@ -1,6 +1,6 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
-import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
+import com.nickardson.jscomputing.common.computers.IComputer;
 
 import java.io.FileNotFoundException;
 
@@ -8,14 +8,14 @@ import java.io.FileNotFoundException;
  * A MultiFileStorage which defines one writable file storage, which all
  */
 public class WritableMultiFileStorage extends MultiFileStorage {
-    public static WritableMultiFileStorageJSAPI create(ServerTerminalComputer computer, IFileStorage[] stores, IWritableFileStorage writable) {
+    public static WritableMultiFileStorageJSAPI create(IComputer computer, IFileStorage[] stores, IWritableFileStorage writable) {
         return new WritableMultiFileStorageJSAPI(computer, stores, writable);
     }
 
     public static class WritableMultiFileStorageJSAPI extends MultiFileStorageJSAPI implements IWritableFileStorage {
         IWritableFileStorage writable;
 
-        WritableMultiFileStorageJSAPI(ServerTerminalComputer computer, IFileStorage[] stores, IWritableFileStorage writable) {
+        WritableMultiFileStorageJSAPI(IComputer computer, IFileStorage[] stores, IWritableFileStorage writable) {
             super(computer, stores);
             this.writable = writable;
         }

@@ -1,12 +1,12 @@
 package com.nickardson.jscomputing.common.computers.events;
 
 import com.nickardson.jscomputing.JSComputingMod;
-import com.nickardson.jscomputing.common.computers.ComputerManager;
 import com.nickardson.jscomputing.common.computers.IServerComputer;
-import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
+import com.nickardson.jscomputing.common.inventory.IContainerComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketComputerOff;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
+import com.nickardson.jscomputing.utility.NetworkUtilities;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 /**
@@ -21,18 +21,18 @@ public class ComputingEventShutDown implements IComputingEvent {
 
     @Override
     public void handle(IServerComputer computer) {
-        JSComputingMod.Blocks.computer.turnOff(entity);
+        entity.setOn(false);
 
-        final PacketComputerOff killPacket = new PacketComputerOff(computer.getID());
-        JSComputingMod.instance.eventListener.onNextTick.add(new Runnable() {
+        final PacketComputerOff packet = new PacketComputerOff(computer.getID());
+
+        JSComputingMod.instance.eventListener.queue(new Runnable() {
             @Override
             public void run() {
-                for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
-                    ContainerTerminalComputer container = (ContainerTerminalComputer) player.openContainer;
-
-                    if (container.getTileEntity().getServerComputer() == null) {
+                // If the server computer for the player's open container doesn't exist, send the kill packet to the client.
+                for (EntityPlayerMP player : NetworkUtilities.getPlayersWithContainer(IContainerComputer.class)) {
+                    if (((IContainerComputer) player.openContainer).getComputer() == null) {
                         player.closeScreen();
-                        ChannelHandler.sendTo(killPacket, player);
+                        ChannelHandler.sendTo(packet, player);
                     }
                 }
             }

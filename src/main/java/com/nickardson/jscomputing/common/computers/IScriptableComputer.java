@@ -11,6 +11,13 @@ public interface IScriptableComputer {
     public void eval(String code);
 
     /**
+     * Evaluates code from the given source.
+     * @param code The code to run
+     * @param source The name of the code's source
+     */
+    public void eval(String code, String source);
+
+    /**
      * Gets the value of the given key.
      * @param key The name of the variable to get.
      * @return

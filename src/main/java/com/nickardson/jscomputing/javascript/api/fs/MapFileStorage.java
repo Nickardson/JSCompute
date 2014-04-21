@@ -1,7 +1,6 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
-import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
-import com.nickardson.jscomputing.javascript.JavaScriptEngine;
+import com.nickardson.jscomputing.common.computers.IComputer;
 import com.nickardson.jscomputing.javascript.api.APIFile;
 
 import java.io.FileNotFoundException;
@@ -10,23 +9,20 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class MapFileStorage {
-
-    public static MapFileStorageJSAPI create(ServerTerminalComputer computer, Map<String, URL> urlMap, boolean isIndexable) {
+    public static MapFileStorageJSAPI create(IComputer computer, Map<String, URL> urlMap, boolean isIndexable) {
         return new MapFileStorageJSAPI(computer, urlMap, isIndexable);
     }
 
     public static class MapFileStorageJSAPI implements IFileStorage {
-
-        private ServerTerminalComputer computer;
+        private IComputer computer;
         private Map<String, URL> urlMap;
         private boolean isIndexable;
 
-        private MapFileStorageJSAPI(ServerTerminalComputer computer, Map<String, URL> urlMap, boolean isIndexable) {
+        private MapFileStorageJSAPI(IComputer computer, Map<String, URL> urlMap, boolean isIndexable) {
             this.computer = computer;
             this.urlMap = urlMap;
             this.isIndexable = isIndexable;
@@ -34,7 +30,7 @@ public class MapFileStorage {
 
         @Override
         public Object combine(String a, String b) throws IOException {
-            return JavaScriptEngine.convert(APIFile.combine(a, b), computer.getScope());
+            return computer.convert(APIFile.combine(a, b));
         }
 
         @Override
@@ -84,7 +80,7 @@ public class MapFileStorage {
                 }
             }
 
-            return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls.toArray(), ls.size(), Object[].class));
+            return computer.convert(ls.toArray());
         }
 
         @Override

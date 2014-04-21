@@ -1,7 +1,6 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
-import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
-import com.nickardson.jscomputing.javascript.JavaScriptEngine;
+import com.nickardson.jscomputing.common.computers.IComputer;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -9,7 +8,7 @@ import java.util.Scanner;
 
 public class FileReadableJSAPI extends ComputerFile {
 
-    private ServerTerminalComputer computer;
+    private IComputer computer;
     private Scanner scanner;
 
     /**
@@ -18,7 +17,7 @@ public class FileReadableJSAPI extends ComputerFile {
      * @param stream The stream to read from.
      * @throws FileNotFoundException
      */
-    public FileReadableJSAPI(ServerTerminalComputer computer, InputStream stream) throws FileNotFoundException {
+    public FileReadableJSAPI(IComputer computer, InputStream stream) throws FileNotFoundException {
         super();
         this.computer = computer;
         this.scanner = new Scanner(stream);
@@ -34,7 +33,8 @@ public class FileReadableJSAPI extends ComputerFile {
         scanner.useDelimiter("\\Z");
         String result = scanner.next();
         scanner.reset();
-        return JavaScriptEngine.convert(result, computer.getScope());
+
+        return computer.convert(result);
     }
 
     public boolean hasNext() {
@@ -42,7 +42,7 @@ public class FileReadableJSAPI extends ComputerFile {
     }
 
     public Object next() {
-        return JavaScriptEngine.convert(scanner.next(), computer.getScope());
+        return computer.convert(scanner.next());
     }
 
     public boolean hasNext(String pattern) {
@@ -50,7 +50,7 @@ public class FileReadableJSAPI extends ComputerFile {
     }
 
     public Object next(String pattern) {
-        return JavaScriptEngine.convert(scanner.next(pattern), computer.getScope());
+        return computer.convert(scanner.next(pattern));
     }
 
     public boolean hasNextLine() {
@@ -58,7 +58,7 @@ public class FileReadableJSAPI extends ComputerFile {
     }
 
     public Object nextLine() {
-        return JavaScriptEngine.convert(scanner.nextLine(), computer.getScope());
+        return computer.convert(scanner.nextLine());
     }
 
     public boolean hasNextBoolean() {

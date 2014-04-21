@@ -1,6 +1,9 @@
 package com.nickardson.jscomputing.common.computers;
 
-import com.nickardson.jscomputing.common.computers.events.*;
+import com.nickardson.jscomputing.common.computers.events.CancellableComputingEvent;
+import com.nickardson.jscomputing.common.computers.events.ComputingEventEvent;
+import com.nickardson.jscomputing.common.computers.events.ComputingEventShutDown;
+import com.nickardson.jscomputing.common.computers.events.IComputingEvent;
 import com.nickardson.jscomputing.common.inventory.ContainerTerminalComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketCursorUpdate;
@@ -15,6 +18,7 @@ import com.nickardson.jscomputing.javascript.api.fs.*;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionYield;
+import com.nickardson.jscomputing.utility.NetworkUtilities;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.lwjgl.input.Keyboard;
 import org.mozilla.javascript.Context;
@@ -22,6 +26,7 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -29,8 +34,17 @@ import java.util.concurrent.BlockingQueue;
  * A ServerJavaScriptComputer with a physical TileEntity, and a basic DOS interface.
  */
 public class ServerTerminalComputer extends AbstractTerminalComputer implements IServerComputer, IScriptableComputer, IEventableComputer, IKeyboardableComputer {
-    private boolean shutdown = false;
+    private TileEntityTerminalComputer tileEntity;
 
+    public ServerTerminalComputer(int id, TileEntityTerminalComputer entityComputer) {
+        super(id);
+
+        this.tileEntity = entityComputer;
+        this.queue = new ArrayBlockingQueue<IComputingEvent>(1024);
+        this.scope = JavaScriptEngine.createScope();
+    }
+
+    private boolean shutdown = false;
     private long lastUpdate = 0;
 
     @Override
@@ -66,7 +80,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
                 PacketScreenUpdate packet = new PacketScreenUpdate(getID(), lines, isCursorVisible(), getCursorX(), getCursorY());
 
-                for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
+                for (EntityPlayerMP player : NetworkUtilities.getPlayersWithContainer(ContainerTerminalComputer.class)) {
                     IComputer computer = ((ContainerTerminalComputer) player.openContainer).getTileEntity().getServerComputer();
                     if (computer != null && computer.getID() == this.getID()) {
                         ChannelHandler.sendTo(packet, player);
@@ -76,7 +90,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                 setCursorUpdated(false);
                 PacketCursorUpdate packet = new PacketCursorUpdate(getID(), isCursorVisible(), getCursorX(), getCursorY());
 
-                for (EntityPlayerMP player : ComputerManager.getPlayersWithContainer(ContainerTerminalComputer.class)) {
+                for (EntityPlayerMP player : NetworkUtilities.getPlayersWithContainer(ContainerTerminalComputer.class)) {
                     IComputer computer = ((ContainerTerminalComputer) player.openContainer).getTileEntity().getServerComputer();
                     if (computer != null && computer.getID() == this.getID()) {
                         ChannelHandler.sendTo(packet, player);
@@ -84,16 +98,6 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                 }
             }
         }
-    }
-
-    private TileEntityTerminalComputer tileEntity;
-
-    public ServerTerminalComputer(int id, TileEntityTerminalComputer entityComputer) {
-        super(id);
-
-        this.tileEntity = entityComputer;
-        this.queue = new ArrayBlockingQueue<IComputingEvent>(1024);
-        this.scope = JavaScriptEngine.createScope();
     }
 
     public TileEntityTerminalComputer getTileEntity() {
@@ -113,8 +117,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     @Override
     public void onPlayerOpenGui() {
-        lastSend = LINE_SEND_TICK_INTERVAL;
-        sendLines(false);
+        sendLines(true);
     }
 
     @Override
@@ -130,7 +133,32 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     @Override
     public void eval(String code) {
-        triggerEvent(new ComputingEventJavaScriptEval(code));
+        eval(code, "");
+    }
+
+    @Override
+    public void eval(String code, String source) {
+        triggerEvent(new ComputingEventEval(code, source));
+    }
+
+    private class ComputingEventEval extends CancellableComputingEvent {
+        String code;
+        String source;
+
+        public ComputingEventEval(String code, String source) {
+            this.code = code;
+            this.source = source;
+        }
+
+        @Override
+        public void handle(IServerComputer computer) {
+            Context.getCurrentContext().evaluateString(ServerTerminalComputer.this.getScope(), code, source, 1, null);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[event Eval: %s]", code);
+        }
     }
 
     @Override
@@ -221,6 +249,7 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
 
     private BlockingQueue<IComputingEvent> queue;
 
+    @Override
     public BlockingQueue<IComputingEvent> getQueue() {
         return queue;
     }
@@ -257,5 +286,15 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
                 }
             }
         }
+    }
+
+    @Override
+    public Object convert(Object object) {
+        if (object.getClass().isArray()) {
+            Object[] ls = (Object[]) object;
+            return JavaScriptEngine.getContext().newArray(getScope(), Arrays.copyOf(ls, ls.length, Object[].class));
+        }
+
+        return JavaScriptEngine.convert(object, getScope());
     }
 }

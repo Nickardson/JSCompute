@@ -19,4 +19,9 @@ public abstract class AbstractComputer implements IComputer {
     public void setID(int id) {
         this.id = id;
     }
+
+    @Override
+    public Object convert(Object object) {
+        return object;
+    }
 }

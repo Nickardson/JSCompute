@@ -1,16 +1,16 @@
 package com.nickardson.jscomputing.javascript.api;
 
-import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
+import com.nickardson.jscomputing.common.computers.IScreenedComputer;
 import org.mozilla.javascript.Context;
 
 public class APIScreen {
 
-    public static ScreenJSAPI create(ServerTerminalComputer computer) {
+    public static ScreenJSAPI create(IScreenedComputer computer) {
         return new ScreenJSAPI(computer);
     }
 
     public static class ScreenJSAPI {
-        private ServerTerminalComputer computer;
+        private IScreenedComputer computer;
 
         public class Cursor {
             public int getX() {
@@ -44,7 +44,7 @@ public class APIScreen {
 
         private Cursor cursor;
 
-        private ScreenJSAPI(ServerTerminalComputer computer) {
+        private ScreenJSAPI(IScreenedComputer computer) {
             this.computer = computer;
             this.cursor = new Cursor();
         }
@@ -268,7 +268,6 @@ public class APIScreen {
             clear("");
         }
 
-        @SuppressWarnings("UnusedDeclaration")
         public boolean isPrintable(char c) {
             Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
             return !Character.isISOControl(c) && block != null && block != Character.UnicodeBlock.SPECIALS;

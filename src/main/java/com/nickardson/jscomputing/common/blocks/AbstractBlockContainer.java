@@ -5,17 +5,19 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+/**
+ * A block, which has a TileEntity.
+ */
 public abstract class AbstractBlockContainer extends BlockContainer {
     protected AbstractBlockContainer(Material material) {
         super(material);
     }
 
     public TileEntity getTileEntity(World world, int x, int y, int z) {
-        TileEntity e = world.getTileEntity(x, y, z);
-        if (e != null) {
-            return e;
-        } else {
-            return null;
+        TileEntity entity = world.getTileEntity(x, y, z);
+        if (entity != null) {
+            return entity;
         }
+        return null;
     }
 }

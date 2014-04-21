@@ -13,6 +13,10 @@ public class JSEventListener {
 
     public Queue<Runnable> onNextTick = new ArrayDeque<Runnable>();
 
+    public void queue(Runnable runnable) {
+        onNextTick.add(runnable);
+    }
+
     @SubscribeEvent
     public void onTick(TickEvent event) {
         if (event.side.isClient()) {

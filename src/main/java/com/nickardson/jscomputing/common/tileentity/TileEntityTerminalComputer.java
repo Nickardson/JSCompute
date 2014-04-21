@@ -1,10 +1,8 @@
 package com.nickardson.jscomputing.common.tileentity;
 
 import com.nickardson.jscomputing.JSComputingMod;
-import com.nickardson.jscomputing.common.computers.ComputerManager;
-import com.nickardson.jscomputing.common.computers.IClientComputer;
-import com.nickardson.jscomputing.common.computers.IComputer;
-import com.nickardson.jscomputing.common.computers.IServerComputer;
+import com.nickardson.jscomputing.common.computers.*;
+import com.nickardson.jscomputing.utility.NetworkUtilities;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -78,8 +76,36 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
     /**
      * Sets whether the computer is on.
      */
-    public void setOn(boolean data) {
-        this.on = data;
+    public void setOn(boolean on) {
+        this.on = on;
+
+        if (on) {
+            IComputer computer;
+            if (NetworkUtilities.isServerWorld(getWorldObj())) {
+                int nextID = getComputerID();
+                if (nextID == -1) {
+                    nextID = ComputerManager.getNextAvailableID();
+                }
+                computer = new ServerTerminalComputer(nextID, this);
+                this.update();
+            } else {
+                computer = new ClientTerminalComputer(this);
+            }
+            this.setComputerID(computer.getID());
+            computer.start();
+        } else {
+            IClientComputer clientComputer = ComputerManager.getClientComputer(getComputerID());
+            if (clientComputer != null) {
+                clientComputer.stop();
+                ComputerManager.removeClientComputer(clientComputer.getID());
+            }
+
+            IServerComputer serverComputer = ComputerManager.getServerComputer(getComputerID());
+            if (serverComputer != null) {
+                serverComputer.stop();
+                ComputerManager.removeServerComputer(serverComputer.getID());
+            }
+        }
     }
 
     private ItemStack[] inv;
@@ -164,8 +190,7 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
 
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
-        return //worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this &&
-                player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 8 * 8;
+        return player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 8 * 8;
     }
 
     @Override

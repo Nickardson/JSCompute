@@ -4,6 +4,8 @@ import com.nickardson.jscomputing.JSComputingMod;
 import com.nickardson.jscomputing.common.GuiHandler;
 import com.nickardson.jscomputing.common.computers.*;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
+import com.nickardson.jscomputing.utility.BlockUtilities;
+import com.nickardson.jscomputing.utility.NetworkUtilities;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
@@ -13,10 +15,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockComputer extends AbstractBlockContainer {
     public static String NAME = JSComputingMod.ASSET_ID + "Computer";
@@ -29,7 +29,7 @@ public class BlockComputer extends AbstractBlockContainer {
     protected IIcon blockIconSide;
 
     public BlockComputer() {
-        super(Material.piston);
+        super(Material.iron);
 
         setCreativeTab(JSComputingMod.creativeTab)
             .setHardness(1f)
@@ -74,24 +74,7 @@ public class BlockComputer extends AbstractBlockContainer {
 
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack) {
-        int look = MathHelper.floor_double((double)((player.rotationYaw * 4F) / 360F) + 0.5D) & 3;
-
-        ForgeDirection direction;
-        switch (look)
-        {
-            case 0:
-                direction = ForgeDirection.NORTH; break;
-            case 1:
-                direction = ForgeDirection.EAST; break;
-            case 2:
-                direction = ForgeDirection.SOUTH; break;
-            case 3:
-                direction = ForgeDirection.WEST; break;
-            default:
-                direction = ForgeDirection.NORTH;
-        }
-
-        world.setBlockMetadataWithNotify(x, y, z, direction.ordinal(), 2);
+        world.setBlockMetadataWithNotify(x, y, z, BlockUtilities.getMetadataFromYaw(player.rotationYaw), 2);
     }
 
     @Override
@@ -103,74 +86,30 @@ public class BlockComputer extends AbstractBlockContainer {
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float relX, float relY, float relZ) {
         TileEntityTerminalComputer entity = (TileEntityTerminalComputer) getTileEntity(world, x, y, z);
 
-        if (entity != null) {
-            if (!entity.isOn()) {
-                turnOn(entity);
-            }
+        if (entity == null) {
+            return false;
+        }
 
-            player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINAL_COMPUTER, world, x, y, z);
+        if (!entity.isOn()) {
+            entity.setOn(true);
 
-            IServerComputer serverComputer = entity.getServerComputer();
-            if (serverComputer != null && !world.isRemote) {
-                serverComputer.onPlayerOpenGui();
-                if (serverComputer instanceof IScreenedComputer) {
-                    ((IScreenedComputer) serverComputer).sendLines(true);
-                }
-                return true;
+            if (entity.getBlockMetadata() < 6) {
+                entity.setBlockMetadata(entity.getBlockMetadata() + 6);
             }
+        }
+
+        player.openGui(JSComputingMod.instance, GuiHandler.GUI_TERMINAL_COMPUTER, world, x, y, z);
+
+        IServerComputer serverComputer = entity.getServerComputer();
+        if (serverComputer != null && NetworkUtilities.isServerWorld(world)) {
+            serverComputer.onPlayerOpenGui();
+            return true;
         }
         return false;
     }
 
-    /**
-     * Turns this computer on, creating a new computer object.
-     * @param entity The TileEntity representing the computer.
-     */
-    public void turnOn(TileEntityTerminalComputer entity) {
-        entity.setOn(true);
-
-        if (entity.getBlockMetadata() < 6) {
-            entity.setBlockMetadata(entity.getBlockMetadata() + 6);
-        }
-
-        IComputer computer;
-
-        if (!entity.getWorldObj().isRemote) {
-            int nextID = entity.getComputerID();
-            if (nextID == -1) {
-                nextID = ComputerManager.getNextAvailableID();
-            }
-            computer = new ServerTerminalComputer(nextID, entity);
-            entity.update();
-        } else {
-            computer = new ClientTerminalComputer(entity);
-        }
-        entity.setComputerID(computer.getID());
-        computer.start();
-    }
-
-    /**
-     * Turns this computer off, removing the existing computer if any.
-     * @param entity The TileEntity representing the computer.
-     */
-    public void turnOff(TileEntityTerminalComputer entity) {
-        entity.setOn(false);
-
-        IClientComputer clientComputer = ComputerManager.getClientComputer(entity.getComputerID());
-        if (clientComputer != null) {
-            clientComputer.stop();
-            ComputerManager.removeClientComputer(clientComputer.getID());
-        }
-
-        IServerComputer serverComputer = ComputerManager.getServerComputer(entity.getComputerID());
-        if (serverComputer != null) {
-            serverComputer.stop();
-            ComputerManager.removeServerComputer(serverComputer.getID());
-        }
-    }
-
     @Override
-    public TileEntity createNewTileEntity(World var1, int var2) {
+    public TileEntity createNewTileEntity(World world, int metadata) {
         return new TileEntityTerminalComputer();
     }
 }

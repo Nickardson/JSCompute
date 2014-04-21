@@ -1,15 +1,14 @@
 package com.nickardson.jscomputing.common.computers;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.DimensionManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Manages the running computers.
@@ -174,22 +173,5 @@ public class ComputerManager {
         }
 
         return ID;
-    }
-
-    /**
-     * Gets a list of players who have the given type of container open.
-     */
-    public static List<EntityPlayerMP> getPlayersWithContainer(Class<? extends Container> clazz) {
-        List<EntityPlayerMP> ls = new ArrayList<EntityPlayerMP>();
-
-        List players = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-        for (Object p : players) {
-            EntityPlayerMP player = (EntityPlayerMP) p;
-            if (clazz.isInstance(player.openContainer)) {
-                ls.add(player);
-            }
-        }
-
-        return ls;
     }
 }

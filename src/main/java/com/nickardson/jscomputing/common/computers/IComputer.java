@@ -24,4 +24,11 @@ public interface IComputer {
      */
     public void stop();
 
+    /**
+     * Gets an object in a form which APIs can use it.
+     * IE, turning a Java object into a Scriptable Object.
+     * @param object The object to convert.
+     * @return The converted object.
+     */
+    public Object convert(Object object);
 }

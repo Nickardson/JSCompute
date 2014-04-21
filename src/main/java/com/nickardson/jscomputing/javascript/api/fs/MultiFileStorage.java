@@ -1,14 +1,11 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
-import com.nickardson.jscomputing.common.computers.ServerTerminalComputer;
-import com.nickardson.jscomputing.javascript.JavaScriptEngine;
+import com.nickardson.jscomputing.common.computers.IComputer;
 import com.nickardson.jscomputing.javascript.api.APIFile;
-import org.mozilla.javascript.NativeArray;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,22 +13,22 @@ import java.util.List;
  */
 public class MultiFileStorage {
 
-    public static MultiFileStorageJSAPI create(ServerTerminalComputer computer, IFileStorage[] stores) {
+    public static MultiFileStorageJSAPI create(IComputer computer, IFileStorage[] stores) {
         return new MultiFileStorageJSAPI(computer, stores);
     }
 
     public static class MultiFileStorageJSAPI implements IFileStorage {
-        private ServerTerminalComputer computer;
+        private IComputer computer;
         private IFileStorage[] stores;
 
-        MultiFileStorageJSAPI(ServerTerminalComputer computer, IFileStorage[] stores) {
+        MultiFileStorageJSAPI(IComputer computer, IFileStorage[] stores) {
             this.computer = computer;
             this.stores = stores;
         }
 
         @Override
         public Object combine(String a, String b) throws IOException {
-            return JavaScriptEngine.convert(APIFile.combine(a, b), computer.getScope());
+            return computer.convert(APIFile.combine(a, b));
         }
 
         @Override
@@ -84,15 +81,15 @@ public class MultiFileStorage {
             List<Object> ls = new ArrayList<Object>();
 
             for (IFileStorage store : stores) {
-                NativeArray array = (NativeArray) store.dir(path);
-                if (array != null) {
-                    for (int i = 0; i < array.getLength(); i++) {
-                        ls.add(array.get(i));
+                List dir = (List) store.dir(path);
+                if (dir != null) {
+                    for (Object file : dir) {
+                        ls.add(file);
                     }
                 }
             }
 
-            return JavaScriptEngine.getContext().newArray(computer.getScope(), Arrays.copyOf(ls.toArray(), ls.size(), Object[].class));
+            return computer.convert(ls.toArray());
         }
 
         @Override
