@@ -68,11 +68,6 @@ public class BlockComputer extends AbstractBlockContainer {
     }
 
     @Override
-    public int onBlockPlaced(World world, int x, int y, int z, int side, float subX, float subY, float subZ, int wat) {
-        return super.onBlockPlaced(world, x, y, z, side, subX, subY, subZ, wat);
-    }
-
-    @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack) {
         world.setBlockMetadataWithNotify(x, y, z, BlockUtilities.getMetadataFromYaw(player.rotationYaw), 2);
     }

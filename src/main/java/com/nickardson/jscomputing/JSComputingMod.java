@@ -3,8 +3,10 @@ package com.nickardson.jscomputing;
 import com.nickardson.jscomputing.common.CommonProxy;
 import com.nickardson.jscomputing.common.GuiHandler;
 import com.nickardson.jscomputing.common.blocks.BlockComputer;
+import com.nickardson.jscomputing.common.blocks.BlockRobot;
 import com.nickardson.jscomputing.common.items.ItemComputerReader;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
+import com.nickardson.jscomputing.common.tileentity.TileEntityRobot;
 import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -66,12 +68,14 @@ public class JSComputingMod
      */
     public static class Blocks {
         public static BlockComputer computer;
+        public static BlockRobot robot;
 
         /**
          * Creates all blocks.
          */
         public static void init() {
             Blocks.register(Blocks.computer = new BlockComputer());
+            Blocks.register(Blocks.robot = new BlockRobot());
         }
 
         /**
@@ -110,6 +114,7 @@ public class JSComputingMod
      */
     public void initTileEntities() {
         GameRegistry.registerTileEntity(TileEntityTerminalComputer.class, TileEntityTerminalComputer.NAME);
+        GameRegistry.registerTileEntity(TileEntityRobot.class, TileEntityRobot.NAME);
     }
 
     @SuppressWarnings("UnusedParameters")
