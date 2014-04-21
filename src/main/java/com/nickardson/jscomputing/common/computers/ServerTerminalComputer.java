@@ -221,10 +221,12 @@ public class ServerTerminalComputer extends AbstractTerminalComputer implements 
         ComputerManager.addServerComputer(this);
     }
 
+    @Override
     public boolean triggerEvent(IComputingEvent event) {
         return queue.offer(event);
     }
 
+    @Override
     public void handleEvent(IComputingEvent event) {
         if (!(event instanceof CancellableComputingEvent) || !((CancellableComputingEvent) event).isCancelled()) {
             event.handle(ServerTerminalComputer.this);

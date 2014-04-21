@@ -1,11 +1,11 @@
 package com.nickardson.jscomputing.common.computers.events;
 
 import com.nickardson.jscomputing.JSComputingMod;
+import com.nickardson.jscomputing.common.computers.AbstractTileEntityComputer;
 import com.nickardson.jscomputing.common.computers.IServerComputer;
 import com.nickardson.jscomputing.common.inventory.IContainerComputer;
 import com.nickardson.jscomputing.common.network.ChannelHandler;
 import com.nickardson.jscomputing.common.network.PacketComputerOff;
-import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 import com.nickardson.jscomputing.utility.NetworkUtilities;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -13,9 +13,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
  * Tells the computer that it must shut down.
  */
 public class ComputingEventShutDown implements IComputingEvent {
-    TileEntityTerminalComputer entity;
+    AbstractTileEntityComputer entity;
 
-    public ComputingEventShutDown(TileEntityTerminalComputer entity) {
+    public ComputingEventShutDown(AbstractTileEntityComputer entity) {
         this.entity = entity;
     }
 

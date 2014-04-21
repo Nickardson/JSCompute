@@ -1,22 +1,23 @@
 package com.nickardson.jscomputing.javascript.api;
 
+import com.nickardson.jscomputing.common.computers.AbstractTileEntityComputer;
+import com.nickardson.jscomputing.common.computers.IEventableComputer;
 import com.nickardson.jscomputing.common.computers.events.ComputingEventShutDown;
-import com.nickardson.jscomputing.common.tileentity.TileEntityTerminalComputer;
 
 public class APIComputer {
-    public static ComputerJSAPI create(TileEntityTerminalComputer computer) {
+    public static ComputerJSAPI create(AbstractTileEntityComputer computer) {
         return new ComputerJSAPI(computer);
     }
 
     public static class ComputerJSAPI {
-        private TileEntityTerminalComputer computer;
+        private AbstractTileEntityComputer computer;
 
-        private ComputerJSAPI(TileEntityTerminalComputer computer) {
+        private ComputerJSAPI(AbstractTileEntityComputer computer) {
             this.computer = computer;
         }
 
         public void off() {
-            computer.getServerComputer().triggerEvent(new ComputingEventShutDown(computer));
+            ((IEventableComputer) computer.getComputer()).triggerEvent(new ComputingEventShutDown(computer));
         }
 
         public int getId() {

@@ -6,47 +6,9 @@ import com.nickardson.jscomputing.utility.NetworkUtilities;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
-public class TileEntityTerminalComputer extends AbstractTileEntity implements IInventory {
+public class TileEntityTerminalComputer extends AbstractTileEntityComputer implements IComputerContainer, IInventory {
     public static String NAME = JSComputingMod.ASSET_ID + "ComputerEntity";
-
-    /**
-     * NBT key name for Computer ID
-     */
-    public static String NBT_KEY_COMPUTER_ID = "compid";
-
-    /**
-     * The ID of the corresponding computer.
-     * @example
-     * Computers.get(computerID);
-     */
-    public int computerID = -1;
-
-    /**
-     * Gets the ID of the computer this TileEntity represents.
-     */
-    public int getComputerID() {
-        return computerID;
-    }
-
-    /**
-     * Changes the ID of the computer this TileEntity represents, and that of the computers themselves.
-     * @param data The new ID.
-     */
-    public void setComputerID(int data) {
-        ComputerManager.changeID(computerID, data);
-        computerID = data;
-        markDirty();
-    }
-
-    /**
-     * Gets the computer corresponding to this TileEntity, on the relevant side.
-     * @return The matching computer.
-     */
-    public IComputer getComputer() {
-        return ComputerManager.getComputer(computerID);
-    }
 
     /**
      * Gets the computer corresponding to this TileEntity, on the Client side.
@@ -64,20 +26,11 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
         return ComputerManager.getServerComputer(computerID);
     }
 
-    boolean on;
-
-    /**
-     * Gets whether the computer is on.
-     */
-    public boolean isOn() {
-        return on;
-    }
-
     /**
      * Sets whether the computer is on.
      */
     public void setOn(boolean on) {
-        this.on = on;
+        super.setOn(on);
 
         if (on) {
             IComputer computer;
@@ -93,41 +46,12 @@ public class TileEntityTerminalComputer extends AbstractTileEntity implements II
             }
             this.setComputerID(computer.getID());
             computer.start();
-        } else {
-            IClientComputer clientComputer = ComputerManager.getClientComputer(getComputerID());
-            if (clientComputer != null) {
-                clientComputer.stop();
-                ComputerManager.removeClientComputer(clientComputer.getID());
-            }
-
-            IServerComputer serverComputer = ComputerManager.getServerComputer(getComputerID());
-            if (serverComputer != null) {
-                serverComputer.stop();
-                ComputerManager.removeServerComputer(serverComputer.getID());
-            }
         }
     }
 
     private ItemStack[] inv;
     public TileEntityTerminalComputer() {
         inv = new ItemStack[0];
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-
-        if (computerID >= 0) {
-            tag.setInteger(NBT_KEY_COMPUTER_ID, computerID);
-        }
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        if (tag.hasKey(NBT_KEY_COMPUTER_ID)) {
-            setComputerID(tag.getInteger(NBT_KEY_COMPUTER_ID));
-        }
     }
 
     @Override
