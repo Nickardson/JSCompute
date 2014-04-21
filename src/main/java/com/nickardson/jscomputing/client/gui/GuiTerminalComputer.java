@@ -24,8 +24,8 @@ public class GuiTerminalComputer extends GuiContainer {
 
     public static boolean USE_DISPLAY_LISTS = true;
 
-    private static ImageFontRenderer font = new ImageFontRenderer(new ResourceLocation(JSComputingMod.ASSET_ID, "fonts/font-half.png"), 160, 294, 10, 21);
-    private static ResourceLocation back = new ResourceLocation(JSComputingMod.ASSET_ID, "textures/gui/terminal.png");
+    private static ImageFontRenderer font;
+    private static ResourceLocation back;
 
     /**
      * Whether keys are sent to the developer console.
@@ -59,6 +59,13 @@ public class GuiTerminalComputer extends GuiContainer {
 
     public GuiTerminalComputer(TileEntityTerminalComputer entityTerminalComputer) {
         super(new ContainerTerminalComputer(entityTerminalComputer));
+
+        if (font == null) {
+            font = new ImageFontRenderer(new ResourceLocation(JSComputingMod.ASSET_ID, "fonts/font-half.png"), 160, 294, 10, 21);
+        }
+        if (back == null) {
+            back = new ResourceLocation(JSComputingMod.ASSET_ID, "textures/gui/terminal.png");
+        }
 
         this.computer = (ClientTerminalComputer) entityTerminalComputer.getClientComputer();
 
