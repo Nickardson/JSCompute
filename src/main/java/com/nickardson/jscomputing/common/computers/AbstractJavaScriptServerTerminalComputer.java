@@ -80,7 +80,6 @@ public abstract class AbstractJavaScriptServerTerminalComputer extends AbstractS
                         file.close();
                     }
                 }
-                APIFile.openFiles.clear();
             }
         });
         thread.start();
