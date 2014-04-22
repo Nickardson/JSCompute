@@ -50,6 +50,24 @@ public class RenderUtilities {
         return new ScaledResolution(Minecraft.getMinecraft().gameSettings, getWidth(), getHeight());
     }
 
+    /**
+     * Gets the top left corner of a rendered box, given the width of that box.
+     * @param width The width of the box.
+     * @return The top left corner of the box.
+     */
+    public static int getCenteredX(int width) {
+        return (int) (RenderUtilities.getWidth() / 2.0 - width / 2.0);
+    }
+
+    /**
+     * Gets the top left corner of a rendered box, given the width of that box.
+     * @param height The height of the box.
+     * @return The top left corner of the box.
+     */
+    public static int getCenteredY(int height) {
+        return (int) (RenderUtilities.getHeight() / 2.0 - height / 2.0);
+    }
+
     public static void prepare2D() {
         unscale();
         setDepth(true);
@@ -85,6 +103,9 @@ public class RenderUtilities {
     }
 
     public static void bindImage(ResourceLocation image) {
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+
         Minecraft.getMinecraft().getTextureManager().bindTexture(image);
     }
 
