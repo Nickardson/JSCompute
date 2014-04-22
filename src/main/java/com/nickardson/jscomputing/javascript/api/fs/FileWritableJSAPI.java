@@ -1,12 +1,14 @@
 package com.nickardson.jscomputing.javascript.api.fs;
 
+import com.nickardson.jscomputing.common.computers.IComputer;
+
 import java.io.*;
 
 public class FileWritableJSAPI extends ComputerFile {
     PrintWriter writer;
 
-    public FileWritableJSAPI(OutputStream stream) throws FileNotFoundException {
-        super();
+    public FileWritableJSAPI(IComputer computer, OutputStream stream) throws FileNotFoundException {
+        super(computer.getID());
         this.writer = new PrintWriter(stream);
     }
 

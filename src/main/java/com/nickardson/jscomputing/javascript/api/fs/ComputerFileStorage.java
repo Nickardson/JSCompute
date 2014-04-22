@@ -54,7 +54,7 @@ public class ComputerFileStorage {
         public FileWritableJSAPI write(String dir) throws FileNotFoundException {
             File file = getComputerFile(dir);
             try {
-                return new FileWritableJSAPI(new FileOutputStream(file));
+                return new FileWritableJSAPI(computer, new FileOutputStream(file));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -65,7 +65,7 @@ public class ComputerFileStorage {
         public FileWritableJSAPI append(String dir) {
             File file = getComputerFile(dir);
             try {
-                return new FileWritableJSAPI(new FileOutputStream(file, true));
+                return new FileWritableJSAPI(computer, new FileOutputStream(file, true));
             } catch (Exception e) {
                 e.printStackTrace();
             }

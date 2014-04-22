@@ -5,10 +5,7 @@ import com.nickardson.jscomputing.common.computers.events.ComputingEventEvent;
 import com.nickardson.jscomputing.common.computers.events.ComputingEventShutDown;
 import com.nickardson.jscomputing.common.computers.events.IComputingEvent;
 import com.nickardson.jscomputing.javascript.JavaScriptEngine;
-import com.nickardson.jscomputing.javascript.api.APIComputer;
-import com.nickardson.jscomputing.javascript.api.APIEvent;
-import com.nickardson.jscomputing.javascript.api.APIFile;
-import com.nickardson.jscomputing.javascript.api.APIScreen;
+import com.nickardson.jscomputing.javascript.api.*;
 import com.nickardson.jscomputing.javascript.api.fs.*;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionPrint;
 import com.nickardson.jscomputing.javascript.methods.APIFunctionWait;
@@ -79,7 +76,9 @@ public abstract class AbstractJavaScriptServerTerminalComputer extends AbstractS
                 JavaScriptEngine.contextExit();
 
                 for (ComputerFile file : APIFile.openFiles) {
-                    file.close();
+                    if (file.getComputerID() == getID()) {
+                        file.close();
+                    }
                 }
                 APIFile.openFiles.clear();
             }

@@ -18,7 +18,7 @@ public class FileReadableJSAPI extends ComputerFile {
      * @throws FileNotFoundException
      */
     public FileReadableJSAPI(IComputer computer, InputStream stream) throws FileNotFoundException {
-        super();
+        super(computer.getID());
         this.computer = computer;
         this.scanner = new Scanner(stream);
     }
