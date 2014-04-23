@@ -48,11 +48,12 @@ public abstract class AbstractJavaScriptServerTerminalComputer extends AbstractS
 
     @Override
     public void start() {
-        getScope().defineProperty("wait", new APIFunctionWait(), ScriptableObject.READONLY);
-        getScope().defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.READONLY);
-        getScope().defineProperty("pull", new APIFunctionYield(this), ScriptableObject.READONLY);
-        getScope().defineProperty("computer", APIComputer.create(getTileEntity()), ScriptableObject.READONLY);
-        getScope().defineProperty("screen", APIScreen.create(this), ScriptableObject.READONLY);
+        getScope().defineProperty("wait", new APIFunctionWait(), ScriptableObject.PERMANENT);
+        getScope().defineProperty("stdout", new APIFunctionPrint(), ScriptableObject.PERMANENT);
+        getScope().defineProperty("pull", new APIFunctionYield(this), ScriptableObject.PERMANENT);
+        getScope().defineProperty("computer", APIComputer.create(getTileEntity()), ScriptableObject.PERMANENT);
+        getScope().defineProperty("screen", APIScreen.create(this), ScriptableObject.PERMANENT);
+        getScope().defineProperty("net", APINet.create(this), ScriptableObject.PERMANENT);
 
         thread = new Thread(new Runnable() {
             @Override
