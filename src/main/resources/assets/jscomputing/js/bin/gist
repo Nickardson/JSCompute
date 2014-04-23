@@ -1,0 +1,43 @@
+if (args.length == 0 || args[0] == "/?") {
+    print("Downloads a gist from Github.");
+    print("usage: gist get [id] [optional filename]");
+}
+
+function gistGET(id, filename) {
+    var request = net.get("https://api.github.com/gists/" + id),
+        data = JSON.parse(request.readAll());
+
+    // Stop on error messages.
+    if (data.message) {
+        throw data.message;
+    }
+
+    print("Downloaded Gist " + id);
+    print("by " + data.owner.login);
+
+    for (var f in data.files) {
+        var file = data.files[f],
+            name;
+
+        // Use the given filename if there's just one file and we've provided a name.
+        if (filename == undefined || Object.keys(data.files).length > 1) {
+            name = file.filename;
+        } else {
+            name = filename;
+        }
+
+        print("got file " + name);
+
+        // Write file contents
+        fs.write(fs.combine(os.cwd, name)).write(file.content).close();
+    }
+
+    request.close();
+}
+
+// The action being performed, ex, "get"
+switch (args[0]) {
+    case "get":
+        gistGET(args[1], args[2]);
+        break;
+}
