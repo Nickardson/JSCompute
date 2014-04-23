@@ -104,6 +104,10 @@ public class APINet {
         }
 
         public ComputerNetFileJSAPI post(String url, NativeObject requestData, NativeObject headers) {
+            return open("POST", url, requestData, headers);
+        }
+
+        public ComputerNetFileJSAPI open(String method, String url, NativeObject requestData, NativeObject headers) {
             try {
                 String data = internalEncode(requestData);
 
@@ -114,7 +118,7 @@ public class APINet {
                 conn.setDoInput(true);
                 conn.setUseCaches(false);
                 conn.setInstanceFollowRedirects(true);
-                conn.setRequestMethod("POST");
+                conn.setRequestMethod(method);
                 conn.setRequestProperty("User-Agent", "Mozilla/5.0");
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 includeHeaders(conn, headers);
