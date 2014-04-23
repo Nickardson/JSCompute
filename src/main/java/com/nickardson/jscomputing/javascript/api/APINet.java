@@ -26,11 +26,15 @@ public class APINet {
         public ComputerNetFileJSAPI get(String url) {
             return get(url, null);
         }
+        public ComputerNetFileJSAPI get(String url, NativeObject requestData) {
+            return get(url, requestData, null);
+        }
 
-        public ComputerNetFileJSAPI get(String url, NativeObject map) {
+        public ComputerNetFileJSAPI get(String url, NativeObject requestData, NativeObject headers) {
             try {
-                String req = internalEncode(map);
-                URLConnection connection = new URL(url + (req.length() > 0 ? "?" : "") + req).openConnection();
+                String req = internalEncode(requestData);
+                HttpURLConnection connection = (HttpURLConnection) new URL(url + (req.length() > 0 ? "?" : "") + req).openConnection();
+                includeHeaders(connection, headers);
 
                 InputStream stream = connection.getInputStream();
                 return new ComputerNetFileJSAPI(computer, stream);
@@ -40,6 +44,11 @@ public class APINet {
             return null;
         }
 
+        /**
+         * Encodes a parameter map to a URL-acceptable string.
+         * @param map The javascript map object.
+         * @return The formatted string.
+         */
         private String internalEncode(NativeObject map) {
             if (map == null) {
                 return "";
@@ -72,13 +81,31 @@ public class APINet {
             return computer.convert(internalEncode(map));
         }
 
+        /**
+         * Includes headers from the given map object.
+         * @param connection The connection to add headers to.
+         * @param map A map containing the headers to add.
+         */
+        private void includeHeaders(HttpURLConnection connection, NativeObject map) {
+            if (map == null) {
+                return;
+            }
+
+            for (Map.Entry<Object, Object> o : map.entrySet()) {
+                connection.setRequestProperty(o.getKey().toString(), o.getValue().toString());
+            }
+        }
+
         public ComputerNetFileJSAPI post(String url) {
             return post(url, null);
         }
+        public ComputerNetFileJSAPI post(String url, NativeObject requestData) {
+            return post(url, requestData, null);
+        }
 
-        public ComputerNetFileJSAPI post(String url, NativeObject object) {
+        public ComputerNetFileJSAPI post(String url, NativeObject requestData, NativeObject headers) {
             try {
-                String data = internalEncode(object);
+                String data = internalEncode(requestData);
 
                 URL u = new URL(url);
 
@@ -90,6 +117,7 @@ public class APINet {
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("User-Agent", "Mozilla/5.0");
                 conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                includeHeaders(conn, headers);
 
                 DataOutputStream os = new DataOutputStream(conn.getOutputStream());
                 {
