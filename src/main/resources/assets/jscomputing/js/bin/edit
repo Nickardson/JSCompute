@@ -37,6 +37,11 @@ function load(filename) {
         }
         read.close();
     }
+
+    if (lines.length == 0) {
+        lines = [""];
+    }
+
     render();
 }
 
