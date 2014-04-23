@@ -18,31 +18,28 @@ public class FileWritableJSAPI extends ComputerFile {
         writer.close();
     }
 
-    public void write(Object obj) {
+    public FileWritableJSAPI write(Object obj) {
         writer.print(obj);
+        return this;
     }
 
-    public void write(String s) {
-        writer.print(s);
-    }
-
-    public void writeln(Object x) {
+    public FileWritableJSAPI writeln(Object x) {
         writer.println(x);
+        return this;
     }
 
-    public void writeln(String x) {
-        writer.println(x);
-    }
-
-    public void writeln() {
+    public FileWritableJSAPI writeln() {
         writer.println();
+        return this;
     }
 
-    public void flush() {
+    public FileWritableJSAPI flush() {
         writer.flush();
+        return this;
     }
 
-    public void writef(String format, Object... args) {
+    public FileWritableJSAPI writef(String format, Object... args) {
         writer.printf(format, args);
+        return this;
     }
 }
